@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/rcon"
+	"github.com/RoboCup-SSL/ssl-remote-control/internal/server"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/sslnet"
 	"github.com/gobuffalo/packr"
 	"log"
 	"net/http"
 )
 
-var address = flag.String("address", ":8082", "The address on which the UI and API is served, default: :8082")
+var address = flag.String("address", ":8083", "The address on which the UI and API is served, default: :8083")
 var refereeAddress = flag.String("refereeAddress", "224.5.23.1:10003", "The multicast address of the referee (GC), default: 224.5.23.1:10003")
 var remoteControlAddress = flag.String("remoteControlAddress", "localhost:10011", "Address to connect to")
 var autoDetectAddress = flag.Bool("autoDetectHost", true, "Automatically detect the game-controller host and replace it with the host given in address")
@@ -31,12 +32,14 @@ func main() {
 	}
 
 	c := rcon.NewClient(*remoteControlAddress, *team, privateKey)
-	c.ReplyConsumer = func(reply *rcon.ControllerToRemoteControl) {
-		log.Println("Received reply: ", reply.String())
-	}
+	s := server.NewServer(c)
+	c.ReplyConsumer = s.Publish
 	c.Start()
 
 	setupUi()
+
+	// serve the bidirectional web socket
+	http.HandleFunc("/api/control", s.WsHandler)
 
 	if err := http.ListenAndServe(*address, nil); err != nil {
 		log.Fatal(err)
