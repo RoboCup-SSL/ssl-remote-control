@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 
-defineProps<{ msg: string }>()
+defineProps({
+  keeperId: Number
+})
 
-const count = ref(0)
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-  <button type="button" @click="count++">count is: {{ count }}</button>
+  <label for="change-keeper-id">Keeper Id: {{ keeperId }}</label>
+  <button id="change-keeper-id" type="button">Change Keeper Id</button>
 </template>
 
 <style scoped>

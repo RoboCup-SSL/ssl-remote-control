@@ -10,3 +10,11 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 # Generate all protobuf code
 protoc -I"./proto" -I"$GOPATH/src" --go_out="$GOPATH/src" proto/*.proto
+
+# generate javascript code
+mkdir -p src/proto
+protoc -I"./proto" \
+    --plugin=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=./src/proto \
+    --ts_proto_opt=esModuleInterop=true \
+    ./proto/*.proto
