@@ -4,11 +4,17 @@ defineProps({
   keeperId: Number
 })
 
+defineEmits([
+  'update:keeperId',
+])
+
 </script>
 
 <template>
   <label for="change-keeper-id">Keeper Id: {{ keeperId }}</label>
-  <button id="change-keeper-id" type="button">Change Keeper Id</button>
+  <button id="change-keeper-id" type="button" @click="$emit('update:keeperId')">
+    Change Keeper Id
+  </button>
 </template>
 
 <style scoped>

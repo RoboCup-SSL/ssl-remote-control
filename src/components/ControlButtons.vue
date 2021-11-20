@@ -1,21 +1,42 @@
 <script setup lang="ts">
-import {ref} from 'vue'
 
 defineProps({
-  challengeFlagSet: Boolean,
-  emergencyStopPending: Boolean,
-  timeoutRequestPending: Boolean,
-  robotSubstitutionRequestPending: Boolean,
+  challengeFlag: Boolean,
+  emergencyStop: Boolean,
+  timeout: Boolean,
+  substituteBot: Boolean,
 })
 
-const count = ref(0)
+defineEmits([
+  'update:challengeFlag',
+  'update:emergencyStop',
+  'update:timeout',
+  'update:substituteBot',
+])
+
 </script>
 
 <template>
-  <button type="button" @click="count++">Raise Challenge Flag</button>
-  <button type="button" @click="count++">Emergency Stop</button>
-  <button type="button" @click="count++">Request Timeout</button>
-  <button type="button" @click="count++" :class="{'button-pressed': robotSubstitutionRequestPending}">Substitute Robot</button>
+  <button type="button"
+          @click="$emit('update:challengeFlag', !challengeFlag)"
+          :class="{'button-pressed': challengeFlag}">
+    Raise Challenge Flag
+  </button>
+  <button type="button"
+          @click="$emit('update:emergencyStop', !emergencyStop)"
+          :class="{'button-pressed': emergencyStop}">
+    Emergency Stop
+  </button>
+  <button type="button"
+          @click="$emit('update:timeout', !timeout)"
+          :class="{'button-pressed': timeout}">
+    Request Timeout
+  </button>
+  <button type="button"
+          @click="$emit('update:substituteBot', !substituteBot)"
+          :class="{'button-pressed': substituteBot}">
+    Substitute Robot
+  </button>
 </template>
 
 <style scoped>
