@@ -63,7 +63,7 @@ func (c *Client) run() {
 			continue
 		}
 
-		stateRequest := RemoteControlToController_GET_STATE
+		stateRequest := RemoteControlToController_PING
 		for {
 			reply, err := c.SendRequest(&RemoteControlToController{
 				Msg: &RemoteControlToController_Request_{
