@@ -2,8 +2,8 @@ import {
     ControllerToRemoteControl,
     RemoteControlTeamState,
     RemoteControlToController
-} from './proto/ssl_gc_rcon_remotecontrol';
-import {ControllerReply_StatusCode} from './proto/ssl_gc_rcon';
+} from '../proto/ssl_gc_rcon_remotecontrol';
+import {ControllerReply_StatusCode} from '../proto/ssl_gc_rcon';
 
 export class ApiController {
     private ws ?: WebSocket
@@ -19,6 +19,10 @@ export class ApiController {
             const json = JSON.stringify(RemoteControlToController.toJSON(request))
             ws.send(json)
         }
+    }
+
+    public SendState(obj: any) {
+        this.Send(RemoteControlToController.fromJSON(obj))
     }
 
     public RegisterStateConsumer(cb: ((state: RemoteControlTeamState) => any)) {
@@ -48,13 +52,13 @@ export class ApiController {
             }
         };
 
-        ws.onclose = (e) => {
+        ws.onclose = () => {
             setTimeout(() => {
                 this.connect(address)
             }, 1000);
         };
 
-        ws.onerror = (e) => {
+        ws.onerror = () => {
             ws.close()
         };
 
