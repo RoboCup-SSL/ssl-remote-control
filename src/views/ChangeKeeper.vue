@@ -10,7 +10,7 @@ const api = inject<ApiController>('api')
 api?.RegisterStateConsumer((s: RemoteControlTeamState) => keeperId.value = s.keeperId)
 
 const changeKeeperId = (id: number) => {
-  api?.SendState({"desiredKeeper": id})
+  api?.Send({msg: {$case: 'desiredKeeper', desiredKeeper: id}})
   router.push('/')
 }
 

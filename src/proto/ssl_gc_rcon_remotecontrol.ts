@@ -6,40 +6,85 @@ import { Signature, ControllerReply } from "./ssl_gc_rcon";
 
 export const protobufPackage = "";
 
+/** All possible request types that the remote control can make */
+export enum RemoteControlRequestType {
+  UNKNOWN_REQUEST_TYPE = 0,
+  EMERGENCY_STOP = 1,
+  ROBOT_SUBSTITUTION = 2,
+  TIMEOUT = 3,
+  CHALLENGE_FLAG = 4,
+  CHANGE_KEEPER_ID = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function remoteControlRequestTypeFromJSON(
+  object: any
+): RemoteControlRequestType {
+  switch (object) {
+    case 0:
+    case "UNKNOWN_REQUEST_TYPE":
+      return RemoteControlRequestType.UNKNOWN_REQUEST_TYPE;
+    case 1:
+    case "EMERGENCY_STOP":
+      return RemoteControlRequestType.EMERGENCY_STOP;
+    case 2:
+    case "ROBOT_SUBSTITUTION":
+      return RemoteControlRequestType.ROBOT_SUBSTITUTION;
+    case 3:
+    case "TIMEOUT":
+      return RemoteControlRequestType.TIMEOUT;
+    case 4:
+    case "CHALLENGE_FLAG":
+      return RemoteControlRequestType.CHALLENGE_FLAG;
+    case 5:
+    case "CHANGE_KEEPER_ID":
+      return RemoteControlRequestType.CHANGE_KEEPER_ID;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return RemoteControlRequestType.UNRECOGNIZED;
+  }
+}
+
+export function remoteControlRequestTypeToJSON(
+  object: RemoteControlRequestType
+): string {
+  switch (object) {
+    case RemoteControlRequestType.UNKNOWN_REQUEST_TYPE:
+      return "UNKNOWN_REQUEST_TYPE";
+    case RemoteControlRequestType.EMERGENCY_STOP:
+      return "EMERGENCY_STOP";
+    case RemoteControlRequestType.ROBOT_SUBSTITUTION:
+      return "ROBOT_SUBSTITUTION";
+    case RemoteControlRequestType.TIMEOUT:
+      return "TIMEOUT";
+    case RemoteControlRequestType.CHALLENGE_FLAG:
+      return "CHALLENGE_FLAG";
+    case RemoteControlRequestType.CHANGE_KEEPER_ID:
+      return "CHANGE_KEEPER_ID";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 /** a registration that must be send by the remote control to the controller as the very first message */
 export interface RemoteControlRegistration {
   /** the team to be controlled */
   team: Team;
   /** signature can optionally be specified to enable secure communication */
-  signature: Signature | undefined;
+  signature?: Signature;
 }
 
 /** wrapper for all messages from the remote control to the controller */
 export interface RemoteControlToController {
   /** signature can optionally be specified to enable secure communication */
-  signature: Signature | undefined;
-  /**
-   * send a ping to the GC to test if the connection is still open.
-   * the value is ignored and a reply is sent back
-   */
-  request: RemoteControlToController_Request | undefined;
-  /** request a new desired keeper id */
-  desiredKeeper: number | undefined;
-  /**
-   * true: request to substitute a robot at the next possibility
-   * false: cancel request
-   */
-  substituteBot: boolean | undefined;
-  /**
-   * true: request a timeout with the next stoppage
-   * false: cancel the request
-   */
-  timeout: boolean | undefined;
-  /**
-   * true: initiate an emergency stop
-   * false: cancel the request
-   */
-  emergencyStop: boolean | undefined;
+  signature?: Signature;
+  msg?:
+    | { $case: "request"; request: RemoteControlToController_Request }
+    | { $case: "desiredKeeper"; desiredKeeper: number }
+    | { $case: "requestRobotSubstitution"; requestRobotSubstitution: boolean }
+    | { $case: "requestTimeout"; requestTimeout: boolean }
+    | { $case: "requestEmergencyStop"; requestEmergencyStop: boolean };
 }
 
 export enum RemoteControlToController_Request {
@@ -89,25 +134,32 @@ export function remoteControlToController_RequestToJSON(
 /** wrapper for all messages from controller to a team's computer */
 export interface ControllerToRemoteControl {
   /** a reply from the controller */
-  controllerReply: ControllerReply | undefined;
+  controllerReply?: ControllerReply;
   /** current team state */
-  state: RemoteControlTeamState | undefined;
+  state?: RemoteControlTeamState;
 }
 
 /** Current team state from Controller for remote control */
 export interface RemoteControlTeamState {
+  /** list of all currently available request types that can be made */
+  availableRequests: RemoteControlRequestType[];
+  /** list of all currently active request types that are pending */
+  activeRequests: RemoteControlRequestType[];
   /** currently set keeper id */
   keeperId: number;
-  /** true, if substitution request pending */
-  substituteBot: boolean;
-  /** true, if emergency stop pending */
-  emergencyStop: boolean;
-  /** number of seconds till emergency stop is executed */
+  /**
+   * number of seconds till emergency stop is executed
+   * zero, if no emergency stop requested
+   */
   emergencyStopIn: number;
-  /** true, if timeout request pending */
-  timeout: boolean;
-  /** true, if challenge flag pending */
-  challengeFlag: boolean;
+  /** number of timeouts left for the team */
+  timeoutsLeft: number;
+  /** number of challenge flags left for the team */
+  challengeFlagsLeft: number;
+  /** max number of robots currently allowed */
+  maxRobots: number;
+  /** list of due times for each active yellow card (in seconds) */
+  yellowCardsDue: number[];
 }
 
 const baseRemoteControlRegistration: object = { team: 0 };
@@ -202,20 +254,20 @@ export const RemoteControlToController = {
     if (message.signature !== undefined) {
       Signature.encode(message.signature, writer.uint32(10).fork()).ldelim();
     }
-    if (message.request !== undefined) {
-      writer.uint32(16).int32(message.request);
+    if (message.msg?.$case === "request") {
+      writer.uint32(16).int32(message.msg.request);
     }
-    if (message.desiredKeeper !== undefined) {
-      writer.uint32(24).int32(message.desiredKeeper);
+    if (message.msg?.$case === "desiredKeeper") {
+      writer.uint32(24).int32(message.msg.desiredKeeper);
     }
-    if (message.substituteBot !== undefined) {
-      writer.uint32(32).bool(message.substituteBot);
+    if (message.msg?.$case === "requestRobotSubstitution") {
+      writer.uint32(32).bool(message.msg.requestRobotSubstitution);
     }
-    if (message.timeout !== undefined) {
-      writer.uint32(40).bool(message.timeout);
+    if (message.msg?.$case === "requestTimeout") {
+      writer.uint32(40).bool(message.msg.requestTimeout);
     }
-    if (message.emergencyStop !== undefined) {
-      writer.uint32(48).bool(message.emergencyStop);
+    if (message.msg?.$case === "requestEmergencyStop") {
+      writer.uint32(48).bool(message.msg.requestEmergencyStop);
     }
     return writer;
   },
@@ -236,19 +288,31 @@ export const RemoteControlToController = {
           message.signature = Signature.decode(reader, reader.uint32());
           break;
         case 2:
-          message.request = reader.int32() as any;
+          message.msg = { $case: "request", request: reader.int32() as any };
           break;
         case 3:
-          message.desiredKeeper = reader.int32();
+          message.msg = {
+            $case: "desiredKeeper",
+            desiredKeeper: reader.int32(),
+          };
           break;
         case 4:
-          message.substituteBot = reader.bool();
+          message.msg = {
+            $case: "requestRobotSubstitution",
+            requestRobotSubstitution: reader.bool(),
+          };
           break;
         case 5:
-          message.timeout = reader.bool();
+          message.msg = {
+            $case: "requestTimeout",
+            requestTimeout: reader.bool(),
+          };
           break;
         case 6:
-          message.emergencyStop = reader.bool();
+          message.msg = {
+            $case: "requestEmergencyStop",
+            requestEmergencyStop: reader.bool(),
+          };
           break;
         default:
           reader.skipType(tag & 7);
@@ -266,26 +330,42 @@ export const RemoteControlToController = {
       object.signature !== undefined && object.signature !== null
         ? Signature.fromJSON(object.signature)
         : undefined;
-    message.request =
-      object.request !== undefined && object.request !== null
-        ? remoteControlToController_RequestFromJSON(object.request)
-        : undefined;
-    message.desiredKeeper =
-      object.desiredKeeper !== undefined && object.desiredKeeper !== null
-        ? Number(object.desiredKeeper)
-        : undefined;
-    message.substituteBot =
-      object.substituteBot !== undefined && object.substituteBot !== null
-        ? Boolean(object.substituteBot)
-        : undefined;
-    message.timeout =
-      object.timeout !== undefined && object.timeout !== null
-        ? Boolean(object.timeout)
-        : undefined;
-    message.emergencyStop =
-      object.emergencyStop !== undefined && object.emergencyStop !== null
-        ? Boolean(object.emergencyStop)
-        : undefined;
+    if (object.request !== undefined && object.request !== null) {
+      message.msg = {
+        $case: "request",
+        request: remoteControlToController_RequestFromJSON(object.request),
+      };
+    }
+    if (object.desiredKeeper !== undefined && object.desiredKeeper !== null) {
+      message.msg = {
+        $case: "desiredKeeper",
+        desiredKeeper: Number(object.desiredKeeper),
+      };
+    }
+    if (
+      object.requestRobotSubstitution !== undefined &&
+      object.requestRobotSubstitution !== null
+    ) {
+      message.msg = {
+        $case: "requestRobotSubstitution",
+        requestRobotSubstitution: Boolean(object.requestRobotSubstitution),
+      };
+    }
+    if (object.requestTimeout !== undefined && object.requestTimeout !== null) {
+      message.msg = {
+        $case: "requestTimeout",
+        requestTimeout: Boolean(object.requestTimeout),
+      };
+    }
+    if (
+      object.requestEmergencyStop !== undefined &&
+      object.requestEmergencyStop !== null
+    ) {
+      message.msg = {
+        $case: "requestEmergencyStop",
+        requestEmergencyStop: Boolean(object.requestEmergencyStop),
+      };
+    }
     return message;
   },
 
@@ -295,18 +375,19 @@ export const RemoteControlToController = {
       (obj.signature = message.signature
         ? Signature.toJSON(message.signature)
         : undefined);
-    message.request !== undefined &&
+    message.msg?.$case === "request" &&
       (obj.request =
-        message.request !== undefined
-          ? remoteControlToController_RequestToJSON(message.request)
+        message.msg?.request !== undefined
+          ? remoteControlToController_RequestToJSON(message.msg?.request)
           : undefined);
-    message.desiredKeeper !== undefined &&
-      (obj.desiredKeeper = message.desiredKeeper);
-    message.substituteBot !== undefined &&
-      (obj.substituteBot = message.substituteBot);
-    message.timeout !== undefined && (obj.timeout = message.timeout);
-    message.emergencyStop !== undefined &&
-      (obj.emergencyStop = message.emergencyStop);
+    message.msg?.$case === "desiredKeeper" &&
+      (obj.desiredKeeper = message.msg?.desiredKeeper);
+    message.msg?.$case === "requestRobotSubstitution" &&
+      (obj.requestRobotSubstitution = message.msg?.requestRobotSubstitution);
+    message.msg?.$case === "requestTimeout" &&
+      (obj.requestTimeout = message.msg?.requestTimeout);
+    message.msg?.$case === "requestEmergencyStop" &&
+      (obj.requestEmergencyStop = message.msg?.requestEmergencyStop);
     return obj;
   },
 
@@ -320,11 +401,53 @@ export const RemoteControlToController = {
       object.signature !== undefined && object.signature !== null
         ? Signature.fromPartial(object.signature)
         : undefined;
-    message.request = object.request ?? undefined;
-    message.desiredKeeper = object.desiredKeeper ?? undefined;
-    message.substituteBot = object.substituteBot ?? undefined;
-    message.timeout = object.timeout ?? undefined;
-    message.emergencyStop = object.emergencyStop ?? undefined;
+    if (
+      object.msg?.$case === "request" &&
+      object.msg?.request !== undefined &&
+      object.msg?.request !== null
+    ) {
+      message.msg = { $case: "request", request: object.msg.request };
+    }
+    if (
+      object.msg?.$case === "desiredKeeper" &&
+      object.msg?.desiredKeeper !== undefined &&
+      object.msg?.desiredKeeper !== null
+    ) {
+      message.msg = {
+        $case: "desiredKeeper",
+        desiredKeeper: object.msg.desiredKeeper,
+      };
+    }
+    if (
+      object.msg?.$case === "requestRobotSubstitution" &&
+      object.msg?.requestRobotSubstitution !== undefined &&
+      object.msg?.requestRobotSubstitution !== null
+    ) {
+      message.msg = {
+        $case: "requestRobotSubstitution",
+        requestRobotSubstitution: object.msg.requestRobotSubstitution,
+      };
+    }
+    if (
+      object.msg?.$case === "requestTimeout" &&
+      object.msg?.requestTimeout !== undefined &&
+      object.msg?.requestTimeout !== null
+    ) {
+      message.msg = {
+        $case: "requestTimeout",
+        requestTimeout: object.msg.requestTimeout,
+      };
+    }
+    if (
+      object.msg?.$case === "requestEmergencyStop" &&
+      object.msg?.requestEmergencyStop !== undefined &&
+      object.msg?.requestEmergencyStop !== null
+    ) {
+      message.msg = {
+        $case: "requestEmergencyStop",
+        requestEmergencyStop: object.msg.requestEmergencyStop,
+      };
+    }
     return message;
   },
 };
@@ -430,12 +553,14 @@ export const ControllerToRemoteControl = {
 };
 
 const baseRemoteControlTeamState: object = {
+  availableRequests: 0,
+  activeRequests: 0,
   keeperId: 0,
-  substituteBot: false,
-  emergencyStop: false,
   emergencyStopIn: 0,
-  timeout: false,
-  challengeFlag: false,
+  timeoutsLeft: 0,
+  challengeFlagsLeft: 0,
+  maxRobots: 0,
+  yellowCardsDue: 0,
 };
 
 export const RemoteControlTeamState = {
@@ -443,24 +568,36 @@ export const RemoteControlTeamState = {
     message: RemoteControlTeamState,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    writer.uint32(10).fork();
+    for (const v of message.availableRequests) {
+      writer.int32(v);
+    }
+    writer.ldelim();
+    writer.uint32(18).fork();
+    for (const v of message.activeRequests) {
+      writer.int32(v);
+    }
+    writer.ldelim();
     if (message.keeperId !== 0) {
-      writer.uint32(8).int32(message.keeperId);
-    }
-    if (message.substituteBot === true) {
-      writer.uint32(16).bool(message.substituteBot);
-    }
-    if (message.emergencyStop === true) {
-      writer.uint32(24).bool(message.emergencyStop);
+      writer.uint32(24).int32(message.keeperId);
     }
     if (message.emergencyStopIn !== 0) {
       writer.uint32(37).float(message.emergencyStopIn);
     }
-    if (message.timeout === true) {
-      writer.uint32(40).bool(message.timeout);
+    if (message.timeoutsLeft !== 0) {
+      writer.uint32(40).int32(message.timeoutsLeft);
     }
-    if (message.challengeFlag === true) {
-      writer.uint32(48).bool(message.challengeFlag);
+    if (message.challengeFlagsLeft !== 0) {
+      writer.uint32(48).int32(message.challengeFlagsLeft);
     }
+    if (message.maxRobots !== 0) {
+      writer.uint32(56).int32(message.maxRobots);
+    }
+    writer.uint32(66).fork();
+    for (const v of message.yellowCardsDue) {
+      writer.float(v);
+    }
+    writer.ldelim();
     return writer;
   },
 
@@ -471,26 +608,56 @@ export const RemoteControlTeamState = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseRemoteControlTeamState } as RemoteControlTeamState;
+    message.availableRequests = [];
+    message.activeRequests = [];
+    message.yellowCardsDue = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.keeperId = reader.int32();
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.availableRequests.push(reader.int32() as any);
+            }
+          } else {
+            message.availableRequests.push(reader.int32() as any);
+          }
           break;
         case 2:
-          message.substituteBot = reader.bool();
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.activeRequests.push(reader.int32() as any);
+            }
+          } else {
+            message.activeRequests.push(reader.int32() as any);
+          }
           break;
         case 3:
-          message.emergencyStop = reader.bool();
+          message.keeperId = reader.int32();
           break;
         case 4:
           message.emergencyStopIn = reader.float();
           break;
         case 5:
-          message.timeout = reader.bool();
+          message.timeoutsLeft = reader.int32();
           break;
         case 6:
-          message.challengeFlag = reader.bool();
+          message.challengeFlagsLeft = reader.int32();
+          break;
+        case 7:
+          message.maxRobots = reader.int32();
+          break;
+        case 8:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.yellowCardsDue.push(reader.float());
+            }
+          } else {
+            message.yellowCardsDue.push(reader.float());
+          }
           break;
         default:
           reader.skipType(tag & 7);
@@ -502,45 +669,68 @@ export const RemoteControlTeamState = {
 
   fromJSON(object: any): RemoteControlTeamState {
     const message = { ...baseRemoteControlTeamState } as RemoteControlTeamState;
+    message.availableRequests = (object.availableRequests ?? []).map((e: any) =>
+      remoteControlRequestTypeFromJSON(e)
+    );
+    message.activeRequests = (object.activeRequests ?? []).map((e: any) =>
+      remoteControlRequestTypeFromJSON(e)
+    );
     message.keeperId =
       object.keeperId !== undefined && object.keeperId !== null
         ? Number(object.keeperId)
         : 0;
-    message.substituteBot =
-      object.substituteBot !== undefined && object.substituteBot !== null
-        ? Boolean(object.substituteBot)
-        : false;
-    message.emergencyStop =
-      object.emergencyStop !== undefined && object.emergencyStop !== null
-        ? Boolean(object.emergencyStop)
-        : false;
     message.emergencyStopIn =
       object.emergencyStopIn !== undefined && object.emergencyStopIn !== null
         ? Number(object.emergencyStopIn)
         : 0;
-    message.timeout =
-      object.timeout !== undefined && object.timeout !== null
-        ? Boolean(object.timeout)
-        : false;
-    message.challengeFlag =
-      object.challengeFlag !== undefined && object.challengeFlag !== null
-        ? Boolean(object.challengeFlag)
-        : false;
+    message.timeoutsLeft =
+      object.timeoutsLeft !== undefined && object.timeoutsLeft !== null
+        ? Number(object.timeoutsLeft)
+        : 0;
+    message.challengeFlagsLeft =
+      object.challengeFlagsLeft !== undefined &&
+      object.challengeFlagsLeft !== null
+        ? Number(object.challengeFlagsLeft)
+        : 0;
+    message.maxRobots =
+      object.maxRobots !== undefined && object.maxRobots !== null
+        ? Number(object.maxRobots)
+        : 0;
+    message.yellowCardsDue = (object.yellowCardsDue ?? []).map((e: any) =>
+      Number(e)
+    );
     return message;
   },
 
   toJSON(message: RemoteControlTeamState): unknown {
     const obj: any = {};
+    if (message.availableRequests) {
+      obj.availableRequests = message.availableRequests.map((e) =>
+        remoteControlRequestTypeToJSON(e)
+      );
+    } else {
+      obj.availableRequests = [];
+    }
+    if (message.activeRequests) {
+      obj.activeRequests = message.activeRequests.map((e) =>
+        remoteControlRequestTypeToJSON(e)
+      );
+    } else {
+      obj.activeRequests = [];
+    }
     message.keeperId !== undefined && (obj.keeperId = message.keeperId);
-    message.substituteBot !== undefined &&
-      (obj.substituteBot = message.substituteBot);
-    message.emergencyStop !== undefined &&
-      (obj.emergencyStop = message.emergencyStop);
     message.emergencyStopIn !== undefined &&
       (obj.emergencyStopIn = message.emergencyStopIn);
-    message.timeout !== undefined && (obj.timeout = message.timeout);
-    message.challengeFlag !== undefined &&
-      (obj.challengeFlag = message.challengeFlag);
+    message.timeoutsLeft !== undefined &&
+      (obj.timeoutsLeft = message.timeoutsLeft);
+    message.challengeFlagsLeft !== undefined &&
+      (obj.challengeFlagsLeft = message.challengeFlagsLeft);
+    message.maxRobots !== undefined && (obj.maxRobots = message.maxRobots);
+    if (message.yellowCardsDue) {
+      obj.yellowCardsDue = message.yellowCardsDue.map((e) => e);
+    } else {
+      obj.yellowCardsDue = [];
+    }
     return obj;
   },
 
@@ -548,12 +738,14 @@ export const RemoteControlTeamState = {
     object: DeepPartial<RemoteControlTeamState>
   ): RemoteControlTeamState {
     const message = { ...baseRemoteControlTeamState } as RemoteControlTeamState;
+    message.availableRequests = (object.availableRequests ?? []).map((e) => e);
+    message.activeRequests = (object.activeRequests ?? []).map((e) => e);
     message.keeperId = object.keeperId ?? 0;
-    message.substituteBot = object.substituteBot ?? false;
-    message.emergencyStop = object.emergencyStop ?? false;
     message.emergencyStopIn = object.emergencyStopIn ?? 0;
-    message.timeout = object.timeout ?? false;
-    message.challengeFlag = object.challengeFlag ?? false;
+    message.timeoutsLeft = object.timeoutsLeft ?? 0;
+    message.challengeFlagsLeft = object.challengeFlagsLeft ?? 0;
+    message.maxRobots = object.maxRobots ?? 0;
+    message.yellowCardsDue = (object.yellowCardsDue ?? []).map((e) => e);
     return message;
   },
 };
@@ -572,6 +764,10 @@ export type DeepPartial<T> = T extends Builtin
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
   ? ReadonlyArray<DeepPartial<U>>
+  : T extends { $case: string }
+  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
+      $case: T["$case"];
+    }
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

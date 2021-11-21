@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import ControlButtons from '../components/ControlButtons.vue';
 import Keeper from '../components/Keeper.vue';
-import {RemoteControlTeamState} from '../proto/ssl_gc_rcon_remotecontrol';
+import {
+  RemoteControlTeamState,
+  RemoteControlRequestType,
+  RemoteControlToController_Request
+} from '../proto/ssl_gc_rcon_remotecontrol';
 import {ApiController} from '../services/ApiController';
 import {inject, ref} from 'vue';
 import router from '../router';
@@ -16,18 +20,25 @@ api?.RegisterStateConsumer((s) => state.value = s)
 <template>
   <div class="control-buttons-container">
     <ControlButtons
-      :substitute-bot="state.substituteBot"
-      :challenge-flag="state.challengeFlag"
-      :timeout="state.timeout"
-      :emergency-stop="state.emergencyStop"
-      @update:substitute-bot="(e: Event) => api?.SendState({substituteBot: e})"
-      @update:challenge-flag="(e: Event) => api?.SendState({challengeFlag: e})"
-      @update:timeout="(e: Event) => api?.SendState({timeout: e})"
-      @update:emergency-stop="(e: Event) => api?.SendState({emergencyStop: e})"
+      :can-request-challenge-flag="state.availableRequests.includes(RemoteControlRequestType.CHALLENGE_FLAG)"
+      :can-request-emergency-stop="state.availableRequests.includes(RemoteControlRequestType.EMERGENCY_STOP)"
+      :can-request-timeout="state.availableRequests.includes(RemoteControlRequestType.TIMEOUT)"
+      :can-request-robot-substitution="state.availableRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION)"
+      :emergency-stop-requested="state.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP)"
+      :timeout-requested="state.activeRequests.includes(RemoteControlRequestType.TIMEOUT)"
+      :robot-substitution-requested="state.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION)"
+      :emergency-stop-in="state.emergencyStopIn"
+      :challenge-flags-left="state.challengeFlagsLeft"
+      :timeouts-left="state.timeoutsLeft"
+      @request:challenge-flag="() => api?.Send({msg: {$case: 'request', request: RemoteControlToController_Request.CHALLENGE_FLAG}})"
+      @request:emergency-stop="(e: Boolean) => api?.Send({msg: {$case: 'requestEmergencyStop', requestEmergencyStop: e.valueOf()}})"
+      @request:timeout="(e: Boolean) => api?.Send({msg: {$case: 'requestTimeout', requestTimeout: e.valueOf()}})"
+      @request:robot-substitution="(e: Boolean) => api?.Send({msg: {$case: 'requestRobotSubstitution', requestRobotSubstitution: e.valueOf()}})"
     />
   </div>
   <div class="keeper-container">
     <Keeper
+      :can-change-keeper-id="state.availableRequests.includes(RemoteControlRequestType.CHANGE_KEEPER_ID)"
       :keeper-id="state.keeperId"
       @update:keeperId="router.push('/change-keeper')"
     />

@@ -1,40 +1,55 @@
 <script setup lang="ts">
 
 defineProps({
-  challengeFlag: Boolean,
-  emergencyStop: Boolean,
-  timeout: Boolean,
-  substituteBot: Boolean,
+  canRequestChallengeFlag: Boolean,
+  canRequestEmergencyStop: Boolean,
+  canRequestTimeout: Boolean,
+  canRequestRobotSubstitution: Boolean,
+
+  emergencyStopRequested: Boolean,
+  timeoutRequested: Boolean,
+  robotSubstitutionRequested: Boolean,
+
+  emergencyStopIn: Number,
+  timeoutsLeft: Number,
+  challengeFlagsLeft: Number,
 })
 
 defineEmits([
-  'update:challengeFlag',
-  'update:emergencyStop',
-  'update:timeout',
-  'update:substituteBot',
+  'request:challengeFlag',
+  'request:emergencyStop',
+  'request:timeout',
+  'request:robotSubstitution',
 ])
 
 </script>
 
 <template>
-  <button type="button"
-          @click="$emit('update:challengeFlag', !challengeFlag)"
-          :class="{'button-pressed': challengeFlag}">
-    Raise Challenge Flag
+  <button
+    :disabled="!canRequestChallengeFlag"
+    @click="$emit('request:challengeFlag')"
+  >
+    Raise Challenge Flag ({{ challengeFlagsLeft }} left)
   </button>
-  <button type="button"
-          @click="$emit('update:emergencyStop', !emergencyStop)"
-          :class="{'button-pressed': emergencyStop}">
-    Emergency Stop
+  <button
+    :disabled="!canRequestEmergencyStop"
+    :class="{'button-pressed': emergencyStopRequested}"
+    @click="$emit('request:emergencyStop', !emergencyStopRequested)"
+  >
+    Emergency Stop <span v-if="emergencyStopIn">[{{ emergencyStopIn }} s]</span>
   </button>
-  <button type="button"
-          @click="$emit('update:timeout', !timeout)"
-          :class="{'button-pressed': timeout}">
-    Request Timeout
+  <button
+    :disabled="!canRequestTimeout"
+    :class="{'button-pressed': timeoutRequested}"
+    @click="$emit('request:timeout', !timeoutRequested)"
+  >
+    Request Timeout ({{ timeoutsLeft }} left)
   </button>
-  <button type="button"
-          @click="$emit('update:substituteBot', !substituteBot)"
-          :class="{'button-pressed': substituteBot}">
+  <button
+    :disabled="!canRequestRobotSubstitution"
+    :class="{'button-pressed': robotSubstitutionRequested}"
+    @click="$emit('request:robotSubstitution', !robotSubstitutionRequested)"
+  >
     Substitute Robot
   </button>
 </template>
