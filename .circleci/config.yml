@@ -34,12 +34,6 @@ jobs:
           GOOS=linux GOARCH=amd64 packr build -o ../../release/ssl-remote-control_linux_amd64
           GOOS=darwin GOARCH=amd64 packr build -o ../../release/ssl-remote-control_darwin_amd64
           GOOS=windows GOARCH=amd64 packr build -o ../../release/ssl-remote-control_windows_amd64.exe
-    - run:
-        working_directory: cmd/ssl-vision-cli
-        command: |
-          GOOS=linux GOARCH=amd64 go build -o ../../release/ssl-vision-cli_linux_amd64
-          GOOS=darwin GOARCH=amd64 go build -o ../../release/ssl-vision-cli_darwin_amd64
-          GOOS=windows GOARCH=amd64 go build -o ../../release/ssl-vision-cli_windows_amd64.exe
     - persist_to_workspace:
         root: .
         paths:
@@ -58,9 +52,6 @@ jobs:
           mv ssl-remote-control_linux_amd64 ssl-remote-control_${CIRCLE_TAG}_linux_amd64
           mv ssl-remote-control_darwin_amd64 ssl-remote-control_${CIRCLE_TAG}_darwin_amd64
           mv ssl-remote-control_windows_amd64.exe ssl-remote-control_${CIRCLE_TAG}_windows_amd64.exe
-          mv ssl-vision-cli_linux_amd64 ssl-vision-cli_${CIRCLE_TAG}_linux_amd64
-          mv ssl-vision-cli_darwin_amd64 ssl-vision-cli_${CIRCLE_TAG}_darwin_amd64
-          mv ssl-vision-cli_windows_amd64.exe ssl-vision-cli_${CIRCLE_TAG}_windows_amd64.exe
     - run:
         name: "Publish Release on GitHub"
         command: |
