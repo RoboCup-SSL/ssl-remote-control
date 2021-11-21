@@ -8,6 +8,8 @@ import {ControllerReply_StatusCode} from '../proto/ssl_gc_rcon';
 export class ApiController {
     private ws ?: WebSocket
     private stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
+    private errorConsumer: ((message: string) => any)[] = []
+    private latestState ?: RemoteControlTeamState
 
     constructor() {
         this.connect(ApiController.determineWebSocketAddress())
@@ -21,12 +23,15 @@ export class ApiController {
         }
     }
 
-    public SendState(obj: any) {
-        this.Send(RemoteControlToController.fromJSON(obj))
-    }
-
     public RegisterStateConsumer(cb: ((state: RemoteControlTeamState) => any)) {
         this.stateConsumer.push(cb)
+        if (this.latestState) {
+            cb(this.latestState)
+        }
+    }
+
+    public RegisterErrorConsumer(cb: ((message: string) => any)) {
+        this.errorConsumer.push(cb)
     }
 
     private static determineWebSocketAddress() {
@@ -44,10 +49,14 @@ export class ApiController {
 
         ws.onmessage = (e) => {
             const reply = ControllerToRemoteControl.fromJSON(JSON.parse(e.data))
-            if (reply.controllerReply?.statusCode === ControllerReply_StatusCode.OK
-                && reply.state) {
-                for (const stateConsumerElement of this.stateConsumer) {
-                    stateConsumerElement(reply.state)
+            if (reply.controllerReply?.statusCode === ControllerReply_StatusCode.OK && reply.state) {
+                this.latestState = reply.state
+                for (const callback of this.stateConsumer) {
+                    callback(reply.state)
+                }
+            } else if (reply.controllerReply?.statusCode === ControllerReply_StatusCode.REJECTED) {
+                for (const callback of this.errorConsumer) {
+                    callback(reply.controllerReply.reason)
                 }
             }
         };
