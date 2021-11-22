@@ -5,6 +5,8 @@
 
 A remote control web app that can be used by each SSL team to send certain commands to the ssl-game-controller.
 
+![Screenshot of Interface](./doc/screenshot.png)
+
 ## Usage
 If you just want to use this app, simply download the latest [release binary](https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest).
 The binary is self-contained. No dependencies are required.
