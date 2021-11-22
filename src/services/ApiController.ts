@@ -6,6 +6,7 @@ import {
 import {ControllerReply_StatusCode} from '../proto/ssl_gc_rcon';
 
 export class ApiController {
+    private readonly apiPath = '/api/control'
     private ws ?: WebSocket
     private stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
     private errorConsumer: ((message: string) => any)[] = []
@@ -27,7 +28,7 @@ export class ApiController {
     }
 
     constructor() {
-        this.connect(ApiController.determineWebSocketAddress())
+        this.connect(this.determineWebSocketAddress())
     }
 
     public Send(request: RemoteControlToController) {
@@ -47,14 +48,9 @@ export class ApiController {
         this.errorConsumer.push(cb)
     }
 
-    private static determineWebSocketAddress() {
-        if (process.env.NODE_ENV === 'development') {
-            // use the default backend port
-            return 'ws://localhost:8083/api/control'
-        }
-        // UI and backend are served on the same host+port on production builds
+    private determineWebSocketAddress() {
         const protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
-        return protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/control'
+        return protocol + '//' + window.location.hostname + ':' + window.location.port + this.apiPath
     }
 
     private connect(address: string) {
