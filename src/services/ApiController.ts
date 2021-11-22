@@ -20,6 +20,7 @@ export class ApiController {
         yellowCardsDue: [120, 100.111],
         keeperId: 1,
         maxRobots: 11,
+        robotsOnField: 9,
         challengeFlagsLeft: 3,
         emergencyStopIn: 3,
         timeoutsLeft: 4,

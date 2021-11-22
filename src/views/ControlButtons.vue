@@ -5,7 +5,6 @@ import router from '../router';
 import {
   RemoteControlTeamState,
   RemoteControlRequestType,
-  RemoteControlToController_Request
 } from '../proto/ssl_gc_rcon_remotecontrol';
 import {ApiController} from '../services/ApiController';
 import {computed, inject, ref} from 'vue';
@@ -22,6 +21,16 @@ const canRequestRobotSubstitution = computed(() => state.value.availableRequests
 const emergencyStopRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
 const robotSubstitutionRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
+const robotDiff = computed(() => {
+  const diff = state.value.maxRobots - state.value.robotsOnField
+  if (diff > 0) {
+    return `Add ${diff} more`
+  }
+  if (diff < 0) {
+    return `Remove ${diff}`
+  }
+  return ''
+})
 
 const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
 const requestEmergencyStop = (request: boolean) => api?.Send({
@@ -82,6 +91,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       :requested="robotSubstitutionRequested"
       text="Robot Substitution"
       text-requested="Cancel Robot Substitution"
+      :text-additional="robotDiff"
       @request="requestRobotSubstitution"
     />
   </div>

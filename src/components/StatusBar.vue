@@ -5,6 +5,7 @@ import {inject, ref} from 'vue';
 const defaultYellowCardsDue: number[] = []
 const online = ref(false)
 const maxRobots = ref(0)
+const numRobots = ref(0)
 const yellowCardsDue = ref(defaultYellowCardsDue)
 const api = inject<ApiController>('api')
 let onlineTimer: NodeJS.Timeout
@@ -12,6 +13,7 @@ let onlineTimer: NodeJS.Timeout
 api?.RegisterStateConsumer((s) => {
   online.value = true
   maxRobots.value = s.maxRobots
+  numRobots.value = s.robotsOnField
   yellowCardsDue.value = s.yellowCardsDue.sort((a: number, b: number) => a - b)
   if (onlineTimer) {
     clearTimeout(onlineTimer)
@@ -30,7 +32,7 @@ api?.RegisterStateConsumer((s) => {
     </div>
     <div class="right-bar-element online-state" :class="{online: online, offline: !online}"/>
     <div class="right-bar-element">
-      Max robots: <strong>{{ maxRobots }}</strong>
+      Robots: <strong>{{ numRobots }}</strong> / <strong>{{ maxRobots }}</strong>
     </div>
   </div>
 </template>

@@ -158,6 +158,8 @@ export interface RemoteControlTeamState {
   challengeFlagsLeft: number;
   /** max number of robots currently allowed */
   maxRobots: number;
+  /** current number of robots visible on field */
+  robotsOnField: number;
   /** list of due times for each active yellow card (in seconds) */
   yellowCardsDue: number[];
 }
@@ -560,6 +562,7 @@ const baseRemoteControlTeamState: object = {
   timeoutsLeft: 0,
   challengeFlagsLeft: 0,
   maxRobots: 0,
+  robotsOnField: 0,
   yellowCardsDue: 0,
 };
 
@@ -592,6 +595,9 @@ export const RemoteControlTeamState = {
     }
     if (message.maxRobots !== 0) {
       writer.uint32(56).int32(message.maxRobots);
+    }
+    if (message.robotsOnField !== 0) {
+      writer.uint32(72).int32(message.robotsOnField);
     }
     writer.uint32(66).fork();
     for (const v of message.yellowCardsDue) {
@@ -649,6 +655,9 @@ export const RemoteControlTeamState = {
         case 7:
           message.maxRobots = reader.int32();
           break;
+        case 9:
+          message.robotsOnField = reader.int32();
+          break;
         case 8:
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
@@ -696,6 +705,10 @@ export const RemoteControlTeamState = {
       object.maxRobots !== undefined && object.maxRobots !== null
         ? Number(object.maxRobots)
         : 0;
+    message.robotsOnField =
+      object.robotsOnField !== undefined && object.robotsOnField !== null
+        ? Number(object.robotsOnField)
+        : 0;
     message.yellowCardsDue = (object.yellowCardsDue ?? []).map((e: any) =>
       Number(e)
     );
@@ -726,6 +739,8 @@ export const RemoteControlTeamState = {
     message.challengeFlagsLeft !== undefined &&
       (obj.challengeFlagsLeft = message.challengeFlagsLeft);
     message.maxRobots !== undefined && (obj.maxRobots = message.maxRobots);
+    message.robotsOnField !== undefined &&
+      (obj.robotsOnField = message.robotsOnField);
     if (message.yellowCardsDue) {
       obj.yellowCardsDue = message.yellowCardsDue.map((e) => e);
     } else {
@@ -745,6 +760,7 @@ export const RemoteControlTeamState = {
     message.timeoutsLeft = object.timeoutsLeft ?? 0;
     message.challengeFlagsLeft = object.challengeFlagsLeft ?? 0;
     message.maxRobots = object.maxRobots ?? 0;
+    message.robotsOnField = object.robotsOnField ?? 0;
     message.yellowCardsDue = (object.yellowCardsDue ?? []).map((e) => e);
     return message;
   },
