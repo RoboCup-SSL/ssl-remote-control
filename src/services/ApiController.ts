@@ -1,5 +1,5 @@
 import {
-    ControllerToRemoteControl,
+    ControllerToRemoteControl, RemoteControlRequestType,
     RemoteControlTeamState,
     RemoteControlToController
 } from '../proto/ssl_gc_rcon_remotecontrol';
@@ -9,7 +9,21 @@ export class ApiController {
     private ws ?: WebSocket
     private stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
     private errorConsumer: ((message: string) => any)[] = []
-    private latestState ?: RemoteControlTeamState
+
+    private latestState: RemoteControlTeamState = {
+        availableRequests: [
+            RemoteControlRequestType.CHANGE_KEEPER_ID,
+            RemoteControlRequestType.CHALLENGE_FLAG,
+            RemoteControlRequestType.ROBOT_SUBSTITUTION,
+        ],
+        activeRequests: [RemoteControlRequestType.ROBOT_SUBSTITUTION],
+        yellowCardsDue: [120, 100.111],
+        keeperId: 1,
+        maxRobots: 11,
+        challengeFlagsLeft: 3,
+        emergencyStopIn: 3,
+        timeoutsLeft: 4,
+    }
 
     constructor() {
         this.connect(ApiController.determineWebSocketAddress())
@@ -25,9 +39,7 @@ export class ApiController {
 
     public RegisterStateConsumer(cb: ((state: RemoteControlTeamState) => any)) {
         this.stateConsumer.push(cb)
-        if (this.latestState) {
-            cb(this.latestState)
-        }
+        cb(this.latestState)
     }
 
     public RegisterErrorConsumer(cb: ((message: string) => any)) {

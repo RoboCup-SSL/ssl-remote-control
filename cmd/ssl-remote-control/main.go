@@ -13,7 +13,7 @@ import (
 var address = flag.String("address", ":8083", "The address on which the UI and API is served, default: :8083")
 var refereeAddress = flag.String("refereeAddress", "224.5.23.1:10003", "The multicast address of the referee (GC), default: 224.5.23.1:10003")
 var remoteControlAddress = flag.String("remoteControlAddress", "localhost:10011", "Address to connect to")
-var autoDetectAddress = flag.Bool("autoDetectHost", true, "Automatically detect the game-controller host and replace it with the host given in address")
+var autoDetectHost = flag.Bool("autoDetectHost", true, "Automatically detect the game-controller host and replace it with the host given in address")
 var privateKeyLocation = flag.String("privateKey", "", "A private key to be used to sign messages")
 var team = flag.String("team", "YELLOW", "The team to control, either YELLOW or BLUE")
 
@@ -22,7 +22,7 @@ func main() {
 
 	privateKey := rcon.LoadPrivateKey(*privateKeyLocation)
 
-	if *autoDetectAddress {
+	if *autoDetectHost {
 		log.Print("Trying to detect host based on incoming referee messages...")
 		host := sslnet.DetectHost(*refereeAddress)
 		if host != "" {

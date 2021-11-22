@@ -23,7 +23,7 @@ api?.RegisterStateConsumer((s) => {
 </script>
 
 <template>
-  <div class="bar">
+  <div>
     <div class="left-bar-element">
       Yellow card due:
       <span class="yellow-card-time" v-for="yellowCardDue of yellowCardsDue">{{ Math.round(yellowCardDue) }}s</span>
@@ -36,17 +36,6 @@ api?.RegisterStateConsumer((s) => {
 </template>
 
 <style scoped>
-.bar {
-  position: absolute;
-  top: 0;
-  width: auto;
-  left: 0;
-  right: 0;
-  margin: 0.5em;
-  padding: 0.5em;
-  text-align: right;
-}
-
 .right-bar-element {
   float: right;
   margin-left: 1em;

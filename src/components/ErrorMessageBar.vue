@@ -2,9 +2,17 @@
 import {ApiController} from '../services/ApiController';
 import {inject, ref} from 'vue';
 
-const errorMessage = ref('');
+const initialMessage = 'Not connected yet'
+const errorMessage = ref('')
 const api = inject<ApiController>('api')
 let errorClearanceTimer: NodeJS.Timeout
+
+api?.RegisterStateConsumer((s) => {
+  if (errorMessage.value === initialMessage) {
+    errorMessage.value = '';
+  }
+})
+errorMessage.value = initialMessage
 
 api?.RegisterErrorConsumer((s) => {
   errorMessage.value = s
@@ -18,21 +26,20 @@ api?.RegisterErrorConsumer((s) => {
 </script>
 
 <template>
-  <div class="error-message" :hidden="errorMessage===''">
-    {{ errorMessage }}
+  <div class="error-message" :class="{present: errorMessage !== ''}">
+    <span>{{ errorMessage }}</span>
   </div>
 </template>
 
 <style scoped>
 .error-message {
-  position: absolute;
-  bottom: 0;
-  width: auto;
-  left: 0;
-  right: 0;
-  border: double red;
   margin: 0.5em;
   padding: 0.5em;
   text-align: center;
+  height: 1em;
+  border: double transparent;
+}
+.error-message.present {
+  border: double red;
 }
 </style>
