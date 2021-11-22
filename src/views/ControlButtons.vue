@@ -23,12 +23,7 @@ const emergencyStopRequested = computed(() => state.value.activeRequests.include
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
 const robotSubstitutionRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 
-const requestChallengeFlag = () => api?.Send({
-  msg: {
-    $case: 'request',
-    request: RemoteControlToController_Request.CHALLENGE_FLAG
-  }
-})
+const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
 const requestEmergencyStop = (request: boolean) => api?.Send({
   msg: {
     $case: 'requestEmergencyStop',

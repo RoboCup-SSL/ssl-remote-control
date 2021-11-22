@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import ControlButtons from './views/ControlButtons.vue'
 import ChangeKeeper from './views/ChangeKeeper.vue'
+import ConfirmChallengeFlag from './views/ConfirmChallengeFlag.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,6 +15,11 @@ const router = createRouter({
             path: '/change-keeper',
             name: 'ChangeKeeper',
             component: ChangeKeeper
+        },
+        {
+            path: '/confirm-challenge-flag',
+            name: 'ConfirmChallengeFlag',
+            component: ConfirmChallengeFlag
         },
     ]
 })
