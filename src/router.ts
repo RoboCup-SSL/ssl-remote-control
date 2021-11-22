@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Home from './views/Home.vue'
+import ControlButtons from './views/ControlButtons.vue'
 import ChangeKeeper from './views/ChangeKeeper.vue'
 
 const router = createRouter({
@@ -7,8 +7,8 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'Home',
-            component: Home
+            name: 'ControlButtons',
+            component: ControlButtons
         },
         {
             path: '/change-keeper',
