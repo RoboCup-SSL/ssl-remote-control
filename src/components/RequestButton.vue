@@ -6,6 +6,7 @@ const props = defineProps({
   requested: Boolean,
   text: String,
   textRequested: String,
+  textAdditional: String,
 })
 
 defineEmits([
@@ -31,6 +32,8 @@ const blue = computed(() => props.canRequest && props.requested)
     <template v-else>
       {{ text }}
     </template>
+    <br v-if="textAdditional">
+    {{textAdditional}}
   </button>
 </template>
 

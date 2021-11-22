@@ -25,7 +25,7 @@ api?.RegisterStateConsumer((s) => {
 <template>
   <div>
     <div class="left-bar-element">
-      Yellow card due:
+      Yellow cards due:
       <span class="yellow-card-time" v-for="yellowCardDue of yellowCardsDue">{{ Math.round(yellowCardDue) }}s</span>
     </div>
     <div class="right-bar-element online-state" :class="{online: online, offline: !online}"/>

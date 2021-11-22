@@ -55,7 +55,8 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
     <RequestButton
       :can-request="canRequestChallengeFlag"
       :requested="false"
-      :text="`Raise Challenge Flag (${state.challengeFlagsLeft} left)`"
+      text="Raise Challenge Flag"
+      :text-additional="`${state.challengeFlagsLeft} left`"
       @request="requestChallengeFlag"
     />
     <RequestButton
@@ -68,22 +69,24 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
     <RequestButton
       :can-request="canRequestTimeout"
       :requested="timeoutRequested"
-      :text="`Request Timeout (${state.timeoutsLeft} left)`"
-      :text-requested="`Cancel Timeout Request (${state.timeoutsLeft} left)`"
+      text="Request Timeout"
+      text-requested="Cancel Timeout Request"
+      :text-additional="`${state.timeoutsLeft} left`"
       @request="requestTimeout"
     />
     <RequestButton
       :can-request="true"
       :requested="false"
-      :text="`Change Keeper Id (1)`"
+      text="Change Keeper Id"
+      :text-additional="`Current: ${state.keeperId}`"
       @request="() => router.push('/change-keeper')"
     />
     <RequestButton
       class="two-columns"
       :can-request="canRequestRobotSubstitution"
       :requested="robotSubstitutionRequested"
-      :text="`Robot Substitution`"
-      :text-requested="`Cancel Robot Substitution`"
+      text="Robot Substitution"
+      text-requested="Cancel Robot Substitution"
       @request="requestRobotSubstitution"
     />
   </div>
