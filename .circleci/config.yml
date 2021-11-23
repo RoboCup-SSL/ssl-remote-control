@@ -32,6 +32,7 @@ jobs:
         command: |
           go get -v github.com/gobuffalo/packr/packr
           GOOS=linux GOARCH=amd64 packr build -o ../../release/ssl-remote-control_linux_amd64
+          GOOS=linux GOARCH=arm packr build -o ../../release/ssl-remote-control_linux_arm
           GOOS=darwin GOARCH=amd64 packr build -o ../../release/ssl-remote-control_darwin_amd64
           GOOS=windows GOARCH=amd64 packr build -o ../../release/ssl-remote-control_windows_amd64.exe
     - persist_to_workspace:
@@ -50,6 +51,7 @@ jobs:
         working_directory: release
         command: |
           mv ssl-remote-control_linux_amd64 ssl-remote-control_${CIRCLE_TAG}_linux_amd64
+          mv ssl-remote-control_linux_arm ssl-remote-control_${CIRCLE_TAG}_linux_arm
           mv ssl-remote-control_darwin_amd64 ssl-remote-control_${CIRCLE_TAG}_darwin_amd64
           mv ssl-remote-control_windows_amd64.exe ssl-remote-control_${CIRCLE_TAG}_windows_amd64.exe
     - run:
