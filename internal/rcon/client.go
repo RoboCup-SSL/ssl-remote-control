@@ -53,9 +53,9 @@ func (c *Client) run() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
+		log.Printf("Connected to game-controller at %v", c.address)
 		c.conn = conn
 		c.reader = bufio.NewReaderSize(conn, 1)
-		log.Printf("Connected to game-controller at %v", c.address)
 
 		if err := c.register(); err != nil {
 			log.Print("Failed to register: ", err)
@@ -129,6 +129,10 @@ func (c *Client) register() error {
 func (c *Client) SendRequest(request *RemoteControlToController) (*ControllerToRemoteControl, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
+
+	if c.conn == nil {
+		return nil, errors.New("Not connected")
+	}
 
 	if c.privateKey != nil {
 		request.Signature = &Signature{Token: &c.token, Pkcs1V15: []byte{}}
