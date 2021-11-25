@@ -7,7 +7,7 @@ const errorMessage = ref('')
 const api = inject<ApiController>('api')
 let errorClearanceTimer: NodeJS.Timeout
 
-api?.RegisterStateConsumer((s) => {
+api?.RegisterStateConsumer(() => {
   if (errorMessage.value === initialMessage) {
     errorMessage.value = '';
   }
@@ -26,20 +26,14 @@ api?.RegisterErrorConsumer((s) => {
 </script>
 
 <template>
-  <div class="error-message" :class="{present: errorMessage !== ''}">
-    <span>{{ errorMessage }}</span>
+  <div class="error-message">
+    {{ errorMessage }}
   </div>
 </template>
 
 <style scoped>
 .error-message {
-  margin: 0.5em;
-  padding: 0.5em;
   text-align: center;
   height: 1em;
-  border: double transparent;
-}
-.error-message.present {
-  border: double red;
 }
 </style>
