@@ -54,7 +54,7 @@ import StatusBar from './components/StatusBar.vue';
 
   transition: background-color .2s ease-out;
   background-clip: padding-box; /* Fix bleeding */
-  border-radius: 3px;
+  border-radius: 1em;
   box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
   text-shadow: 0 1px 0 rgba(255,255,255, .9);
 
