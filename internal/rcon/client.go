@@ -12,7 +12,6 @@ import (
 )
 
 type Client struct {
-	address       string
 	team          string
 	privateKey    *rsa.PrivateKey
 	conn          net.Conn
@@ -24,18 +23,17 @@ type Client struct {
 	mutex         sync.Mutex
 }
 
-func NewClient(address string, team string, privateKey *rsa.PrivateKey) (c *Client) {
+func NewClient(team string, privateKey *rsa.PrivateKey) (c *Client) {
 	c = new(Client)
-	c.address = address
 	c.team = team
 	c.privateKey = privateKey
 	c.ReplyConsumer = func(*ControllerToRemoteControl) {}
 	return
 }
 
-func (c *Client) Start() {
+func (c *Client) Start(address string) {
 	c.active = true
-	go c.run()
+	go c.run(address)
 }
 
 func (c *Client) Stop() {
@@ -45,15 +43,15 @@ func (c *Client) Stop() {
 	}
 }
 
-func (c *Client) run() {
+func (c *Client) run(address string) {
 	for c.active {
-		conn, err := net.Dial("tcp", c.address)
+		conn, err := net.Dial("tcp", address)
 		if err != nil {
-			log.Println("could not connect to game-controller at ", c.address)
+			log.Println("could not connect to game-controller at ", address)
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		log.Printf("Connected to game-controller at %v", c.address)
+		log.Printf("Connected to game-controller at %v", address)
 		c.conn = conn
 		c.reader = bufio.NewReaderSize(conn, 1)
 

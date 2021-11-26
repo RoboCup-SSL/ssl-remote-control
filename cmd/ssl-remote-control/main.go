@@ -22,19 +22,15 @@ func main() {
 
 	privateKey := rcon.LoadPrivateKey(*privateKeyLocation)
 
-	if *autoDetectHost {
-		log.Print("Trying to detect host based on incoming referee messages...")
-		host := sslnet.DetectHost(*refereeAddress)
-		if host != "" {
-			log.Print("Detected game-controller host: ", host)
-			*remoteControlAddress = sslnet.GetConnectionString(*remoteControlAddress, host)
-		}
-	}
-
-	c := rcon.NewClient(*remoteControlAddress, *team, privateKey)
+	c := rcon.NewClient(*team, privateKey)
 	s := server.NewServer(c)
 	c.ReplyConsumer = s.Publish
-	c.Start()
+
+	if *autoDetectHost {
+		go detectHostAndRun(c)
+	} else {
+		c.Start(*remoteControlAddress)
+	}
 
 	setupUi()
 
@@ -43,6 +39,17 @@ func main() {
 
 	if err := http.ListenAndServe(*address, nil); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func detectHostAndRun(c *rcon.Client) {
+	log.Print("Trying to detect host based on incoming referee messages...")
+	if host, err := sslnet.DetectHost(*refereeAddress); err != nil {
+		log.Fatal("Failed to detect host: ", err)
+	} else {
+		log.Print("Detected game-controller host: ", host)
+		detectedAddress := sslnet.GetConnectionString(*remoteControlAddress, host)
+		c.Start(detectedAddress)
 	}
 }
 
