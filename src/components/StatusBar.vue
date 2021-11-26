@@ -22,6 +22,8 @@ api?.RegisterStateConsumer((s) => {
     online.value = false
   }, 1000)
 })
+
+online.value = false
 </script>
 
 <template>
