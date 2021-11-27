@@ -7,6 +7,9 @@ A remote control web app that can be used by each SSL team to send certain comma
 
 ![Screenshot of Interface](./doc/screenshot.png)
 
+## Run on a Raspberry Pi
+See [rpi/Readme.md](rpi/Readme.md).
+
 ## Usage
 If you just want to use this app, simply download the latest [release binary](https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest).
 The binary is self-contained. No dependencies are required.
@@ -14,10 +17,10 @@ The binary is self-contained. No dependencies are required.
 You can also use pre-build docker images:
 ```shell script
 docker pull robocupssl/ssl-remote-control
-docker run -p 8082:8082 robocupssl/ssl-remote-control
+docker run -p 8083:8083 robocupssl/ssl-remote-control
 ```
 
-By default, the UI is available at http://localhost:8082
+By default, the UI is available at http://localhost:8083
 
 ## Development
 
@@ -50,7 +53,7 @@ go run cmd/ssl-remote-control/main.go
 Run the UI:
 ```bash
 # compile and hot-reload
-yarn serve
+yarn dev
 ```
 Or use the provided IntelliJ run configurations.
 
