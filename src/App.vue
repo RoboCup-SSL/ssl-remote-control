@@ -18,7 +18,7 @@ import StatusBar from './components/StatusBar.vue';
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: ghostwhite;
-  font-size: 2vw;
+  font-size: 4vmin;
   height: 100%;
   width: 100%;
   padding: 0.5vh 0.5vw;
@@ -27,7 +27,7 @@ import StatusBar from './components/StatusBar.vue';
 
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: stretch;
   align-content: stretch;
@@ -39,12 +39,11 @@ import StatusBar from './components/StatusBar.vue';
 
 .button{
   display: inline-block;
-  padding: 6px 20px;
   margin: 0;
   cursor: pointer;
   border: 1px solid #bbb;
-  overflow: visible;
-  font-size: 2vw;
+  overflow: hidden;
+  font-size: 4vmin;
   text-decoration: none;
   white-space: nowrap;
   color: #555;
