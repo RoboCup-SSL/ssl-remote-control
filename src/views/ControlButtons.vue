@@ -17,6 +17,7 @@ api?.RegisterStateConsumer((s) => state.value = s)
 const canRequestChallengeFlag = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHALLENGE_FLAG))
 const canRequestEmergencyStop = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const canRequestTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.TIMEOUT))
+const canChangeKeeperId = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHANGE_KEEPER_ID))
 const canRequestRobotSubstitution = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 const emergencyStopRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
@@ -79,7 +80,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       @request="requestTimeout"
     />
     <RequestButton
-      :can-request="true"
+      :can-request="canChangeKeeperId"
       :requested="false"
       text="Change Keeper Id"
       :text-additional="`Current: ${state.keeperId}`"
