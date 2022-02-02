@@ -25,10 +25,10 @@ const robotSubstitutionRequested = computed(() => state.value.activeRequests.inc
 const robotDiff = computed(() => {
   const diff = state.value.maxRobots - state.value.robotsOnField
   if (diff > 0) {
-    return `Add ${diff} more`
+    return `Add up to ${diff} robots`
   }
   if (diff < 0) {
-    return `Remove ${diff}`
+    return `Remove ${diff} robots`
   }
   return ''
 })
