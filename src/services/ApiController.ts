@@ -1,5 +1,5 @@
 import {
-    ControllerToRemoteControl, RemoteControlRequestType,
+    ControllerToRemoteControl,
     RemoteControlTeamState,
     RemoteControlToController
 } from '../proto/ssl_gc_rcon_remotecontrol';
@@ -11,23 +11,10 @@ export class ApiController {
     private stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
     private errorConsumer: ((message: string) => any)[] = []
 
-    private latestState: RemoteControlTeamState = {
-        availableRequests: [
-            RemoteControlRequestType.CHANGE_KEEPER_ID,
-            RemoteControlRequestType.CHALLENGE_FLAG,
-            RemoteControlRequestType.ROBOT_SUBSTITUTION,
-        ],
-        activeRequests: [RemoteControlRequestType.ROBOT_SUBSTITUTION],
-        yellowCardsDue: [120, 100.111],
-        keeperId: 1,
-        maxRobots: 11,
-        robotsOnField: 9,
-        challengeFlagsLeft: 3,
-        emergencyStopIn: 3,
-        timeoutsLeft: 4,
-    }
+    private latestState: RemoteControlTeamState
 
-    constructor() {
+    constructor(latestState: RemoteControlTeamState) {
+        this.latestState = latestState
         this.connect(this.determineWebSocketAddress())
     }
 
