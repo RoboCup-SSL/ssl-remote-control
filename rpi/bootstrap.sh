@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 function installService() {
     if [[ ! -f ~/.local/share/systemd/user/ssl-remote-control.service ]]; then
+        mkdir -p ~/.local/share/systemd/user/
         cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
         systemctl --user enable ssl-remote-control.service
         systemctl --user start ssl-remote-control.service
@@ -33,7 +34,7 @@ function installFirefox() {
 
     # Enable Auto-Login on console
     mkdir -p /etc/systemd/system/getty@tty1.service.d
-    cp "${SCRIPT_DIR}/autologin.conf" /etc/systemd/system/getty@tty1.service.d/autologin.conf
+    sudo cp "${SCRIPT_DIR}/autologin.conf" /etc/systemd/system/getty@tty1.service.d/autologin.conf
 
     # Configure to run browser when X starts
     cp "${SCRIPT_DIR}/.xinitrc" ~/.xinitrc
