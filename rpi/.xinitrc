@@ -6,4 +6,4 @@ xset s noblank
 
 # Hide mouse pointer
 unclutter -idle 0 &
-firefox --kios http://localhost:8083
+firefox --kiosk http://localhost:8083
