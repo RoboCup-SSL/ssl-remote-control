@@ -34,7 +34,7 @@ function installFirefox() {
 
     # Enable Auto-Login on console
     mkdir -p /etc/systemd/system/getty@tty1.service.d
-    cp "${SCRIPT_DIR}/autologin.conf" /etc/systemd/system/getty@tty1.service.d/autologin.conf
+    sudo cp "${SCRIPT_DIR}/autologin.conf" /etc/systemd/system/getty@tty1.service.d/autologin.conf
 
     # Configure to run browser when X starts
     cp "${SCRIPT_DIR}/.xinitrc" ~/.xinitrc
