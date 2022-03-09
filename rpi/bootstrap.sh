@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 function installService() {
     if [[ ! -f ~/.local/share/systemd/user/ssl-remote-control.service ]]; then
+        mkdir -p ~/.local/share/systemd/user/
         cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
         systemctl --user enable ssl-remote-control.service
         systemctl --user start ssl-remote-control.service
