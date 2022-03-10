@@ -4,12 +4,14 @@ set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
+SRC_VERSION=0.2.1
+
 function installRemoteControl() {
-    sudo apt-get update
-    sudo apt-get install wget
+    systemctl --user stop ssl-remote-control.service
     mkdir -p ~/.local/bin/
-    wget https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/v0.2.1/ssl-remote-control_v0.2.1_linux_arm -O ~/.local/bin/ssl-remote-control
+    wget "https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/v${SRC_VERSION}/ssl-remote-control_v${SRC_VERSION}_linux_arm" -O ~/.local/bin/ssl-remote-control
     chmod +x ~/.local/bin/ssl-remote-control
+    systemctl --user start ssl-remote-control.service
 }
 
 function installService() {
@@ -17,7 +19,6 @@ function installService() {
         mkdir -p ~/.local/share/systemd/user/
         cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
         systemctl --user enable ssl-remote-control.service
-        systemctl --user start ssl-remote-control.service
     fi
 }
 
@@ -41,6 +42,6 @@ function installBrowser() {
     cp "${SCRIPT_DIR}/.bash_profile" ~/.bash_profile
 }
 
-installRemoteControl
 installService
+installRemoteControl
 installBrowser
