@@ -4,22 +4,18 @@ set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
+function installRemoteControl() {
+    sudo apt-get update
+    sudo apt-get install wget
+    wget https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/v0.2.1/ssl-remote-control_v0.2.1_linux_arm -O ~/.local/bin/ssl-remote-control
+}
+
 function installService() {
     if [[ ! -f ~/.local/share/systemd/user/ssl-remote-control.service ]]; then
         mkdir -p ~/.local/share/systemd/user/
         cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
         systemctl --user enable ssl-remote-control.service
         systemctl --user start ssl-remote-control.service
-    fi
-}
-
-function installLcdDisplay() {
-    if [[ ! -d ~/LCD-show ]]; then
-        # http://www.lcdwiki.com/MHS-3.5inch_RPi_Display
-        git clone https://github.com/goodtft/LCD-show.git ~/LCD-show
-        cd ~/LCD-show
-        sudo ./MHS35-show # this will reboot the pi !
-        # Note: To turn display, run: sudo ./rotate 180 (will also reboot pi)
     fi
 }
 
@@ -43,7 +39,6 @@ function installFirefox() {
     cp "${SCRIPT_DIR}/.bash_profile" ~/.bash_profile
 }
 
+installRemoteControl
 installService
 installFirefox
-# Uncomment to install LCD-Show (performs a reboot)
-#installLcdDisplay

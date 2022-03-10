@@ -1,15 +1,17 @@
 # Run remote control on a Raspberry Pi
 
----
-**Note** 
-
-This is still work-in-progress.
-
----
-
 This folder contains scripts to configure a Pi to run the remote control.
-You can install a Raspberry Pi OS Lite and use the [bootstrap.sh](bootstrap.sh) script to set it up.
+You can install a Raspberry Pi OS Lite and use the [bootstrap.sh](bootstrap.sh) script to set it up:
 
-Some ideas:
-- Use https://github.com/guysoft/FullPageOS to create an initial image
-- Use https://github.com/RPi-Distro/pi-gen to create an initial image
+```shell
+# 1. Install Raspberry Pi OS Lite (32 or 64bit)
+# 2. Setup username, password, hostname and ssh with
+sudo raspi-config
+# 3. Install GIT
+sudo apt install git
+# 4. Clone this repository
+git clone https://github.com/RoboCup-SSL/ssl-remote-control.git
+cd ssl-remote-control
+# 5. Run bootstrap script
+./rpi/bootstrap.sh
+```
