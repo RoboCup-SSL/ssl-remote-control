@@ -7,6 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 function installRemoteControl() {
     sudo apt-get update
     sudo apt-get install wget
+    mkdir -p ~/.local/bin/
     wget https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/v0.2.1/ssl-remote-control_v0.2.1_linux_arm -O ~/.local/bin/ssl-remote-control
 }
 
