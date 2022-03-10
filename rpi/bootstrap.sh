@@ -21,14 +21,14 @@ function installService() {
     fi
 }
 
-function installFirefox() {
+function installBrowser() {
     sudo apt-get update
 
     # https://blog.r0b.io/post/minimal-rpi-kiosk/
     sudo apt-get install --no-install-recommends -y \
         xserver-xorg-video-all xserver-xorg-input-all xserver-xorg-core xinit x11-xserver-utils \
         unclutter \
-        firefox-esr
+        chromium-browser
 
     # Enable Auto-Login on console
     mkdir -p /etc/systemd/system/getty@tty1.service.d
@@ -43,4 +43,4 @@ function installFirefox() {
 
 installRemoteControl
 installService
-installFirefox
+installBrowser

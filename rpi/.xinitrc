@@ -6,4 +6,6 @@ xset s noblank
 
 # Hide mouse pointer
 unclutter -idle 0 &
-firefox --kiosk http://localhost:8083
+
+# Start browser in kiosk mode
+chromium-browser http://localhost:8083 --start-fullscreen --kiosk --incognito --noerrdialogs --no-first-run --disk-cache-dir=/dev/null
