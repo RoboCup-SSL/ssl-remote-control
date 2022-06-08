@@ -35,6 +35,10 @@ jobs:
             GOOS=linux GOARCH=arm packr build -o ../../release/ssl-remote-control_linux_arm
             GOOS=darwin GOARCH=amd64 packr build -o ../../release/ssl-remote-control_darwin_amd64
             GOOS=windows GOARCH=amd64 packr build -o ../../release/ssl-remote-control_windows_amd64.exe
+      - run:
+          command: |
+            mkdir -p release
+            tar czf release/bootstrap.tar.gz rpi
       - persist_to_workspace:
           root: .
           paths:
@@ -54,6 +58,7 @@ jobs:
             mv ssl-remote-control_linux_arm ssl-remote-control_${CIRCLE_TAG}_linux_arm
             mv ssl-remote-control_darwin_amd64 ssl-remote-control_${CIRCLE_TAG}_darwin_amd64
             mv ssl-remote-control_windows_amd64.exe ssl-remote-control_${CIRCLE_TAG}_windows_amd64.exe
+            mv bootstrap.tar.gz bootstrap_${CIRCLE_TAG}.tar.gz
       - run:
           name: "Publish Release on GitHub"
           command: |
