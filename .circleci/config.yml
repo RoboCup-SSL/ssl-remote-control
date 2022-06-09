@@ -2,29 +2,31 @@ version: 2
 jobs:
   frontend:
     docker:
-      - image: circleci/node:16.15.1
+      - image: cimg/node:16.14
     steps:
       - checkout
       - run:
           name: "Install dependencies"
-          command: yarn
+          command: yarn install
+      - run:
+          name: "Run lint"
+          command: yarn lint
       - run:
           name: "Build"
           command: yarn build
       - persist_to_workspace:
           root: .
           paths:
-            - dist/*
+            - internal/ui/dist/*
 
   backend:
     docker:
-      - image: circleci/golang:1.17
-
-    working_directory: /go/src/github.com/RoboCup-SSL/ssl-remote-control
+      - image: cimg/go:1.18
     steps:
       - checkout
       - attach_workspace:
           at: .
+      - run: go get -v -t -d ./...
       - run: go test -v ./...
       - run:
           command: |
@@ -44,7 +46,7 @@ jobs:
 
   publish-github-release:
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.18
     steps:
       - attach_workspace:
           at: .
@@ -60,7 +62,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            go get github.com/tcnksm/ghr
+            go install github.com/tcnksm/ghr@v0.14.0
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./release/
 
   docker-build:
@@ -102,6 +104,7 @@ workflows:
             tags:
               only: /.*/
       - publish-github-release:
+          context: github
           requires:
             - backend
           filters:
