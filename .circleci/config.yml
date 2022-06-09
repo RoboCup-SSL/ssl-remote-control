@@ -67,6 +67,30 @@ jobs:
             go get github.com/tcnksm/ghr
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./release/
 
+  docker-build:
+    docker:
+      - image: cimg/base:2022.04
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+      - run: |
+          docker build .
+
+  docker-build-and-push:
+    docker:
+      - image: cimg/base:2022.04
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+      - run: |
+          TAG=${CIRCLE_TAG:1}
+          TAG=${TAG:-latest}
+          docker build -t robocupssl/ssl-remote-control:$TAG .
+          docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
+          docker push robocupssl/ssl-remote-control:$TAG
+
 workflows:
   version: 2
   main:
@@ -87,5 +111,17 @@ workflows:
           filters:
             branches:
               ignore: /.*/
+            tags:
+              only: /^v.*/
+      - docker-build:
+          context: docker hub
+          filters:
+            branches:
+              ignore: master
+      - docker-build-and-push:
+          context: docker hub
+          filters:
+            branches:
+              only: master
             tags:
               only: /^v.*/
