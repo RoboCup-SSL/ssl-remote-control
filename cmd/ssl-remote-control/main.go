@@ -5,7 +5,7 @@ import (
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/rcon"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/server"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/sslnet"
-	"github.com/gobuffalo/packr"
+	"github.com/RoboCup-SSL/ssl-remote-control/internal/ui"
 	"log"
 	"net/http"
 )
@@ -32,7 +32,7 @@ func main() {
 		c.Start(*remoteControlAddress)
 	}
 
-	setupUi()
+	ui.HandleUi()
 
 	// serve the bidirectional web socket
 	http.HandleFunc("/api/control", s.WsHandler)
@@ -50,15 +50,5 @@ func detectHostAndRun(c *rcon.Client) {
 		log.Print("Detected game-controller host: ", host)
 		detectedAddress := sslnet.GetConnectionString(*remoteControlAddress, host)
 		c.Start(detectedAddress)
-	}
-}
-
-func setupUi() {
-	box := packr.NewBox("../../dist")
-	http.Handle("/", http.FileServer(box))
-	if box.Has("index.html") {
-		log.Printf("UI is available at http://%v", *address)
-	} else {
-		log.Print("Backend-only version started. Run the UI separately or get a binary that has the UI included")
 	}
 }

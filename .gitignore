@@ -2,6 +2,7 @@
 node_modules
 /dist
 /dist-ssr
+/internal/ui/dist
 
 # local env files
 .env.local

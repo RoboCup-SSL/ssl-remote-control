@@ -7,7 +7,7 @@ RUN yarn build
 FROM golang:1.18-alpine AS build_go
 WORKDIR /go/src/github.com/RoboCup-SSL/ssl-remote-control
 COPY . .
-COPY --from=build_node /tmp/ssl-remote-control/dist dist
+COPY --from=build_node /tmp/ssl-remote-control/internal/ui/dist internal/ui/dist
 RUN go get -v -t -d ./...
 RUN go get -v github.com/gobuffalo/packr/packr
 WORKDIR cmd/ssl-remote-control
