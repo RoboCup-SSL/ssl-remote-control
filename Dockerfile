@@ -1,4 +1,4 @@
-FROM node:16.13.0-alpine3.11 AS build_node
+FROM node:16.15.1-alpine3.16 AS build_node
 WORKDIR /tmp/ssl-remote-control
 COPY . .
 RUN yarn install
@@ -8,15 +8,12 @@ FROM golang:1.18-alpine AS build_go
 WORKDIR /go/src/github.com/RoboCup-SSL/ssl-remote-control
 COPY . .
 COPY --from=build_node /tmp/ssl-remote-control/internal/ui/dist internal/ui/dist
-RUN go get -v -t -d ./...
-RUN go get -v github.com/gobuffalo/packr/packr
-WORKDIR cmd/ssl-remote-control
-RUN GOOS=linux GOARCH=amd64 packr build -o ../../release/ssl-remote-control_linux_amd64
+RUN go build -o release/ssl-remote-control_linux_amd64 ./cmd/ssl-remote-control
 
 # Start fresh from a smaller image
 FROM alpine:3.16
 COPY --from=build_go /go/src/github.com/RoboCup-SSL/ssl-remote-control/release/ssl-remote-control_linux_amd64 /app/ssl-remote-control
-EXPOSE 8082
+EXPOSE 8083
 USER 1000
 ENTRYPOINT ["/app/ssl-remote-control"]
 CMD []
