@@ -14,7 +14,7 @@ WORKDIR cmd/ssl-remote-control
 RUN GOOS=linux GOARCH=amd64 packr build -o ../../release/ssl-remote-control_linux_amd64
 
 # Start fresh from a smaller image
-FROM alpine:3.15
+FROM alpine:3.16
 COPY --from=build_go /go/src/github.com/RoboCup-SSL/ssl-remote-control/release/ssl-remote-control_linux_amd64 /app/ssl-remote-control
 EXPOSE 8082
 USER 1000
