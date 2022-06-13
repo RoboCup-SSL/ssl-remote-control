@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/ssl-remote-control
+ExecStart=%h/.local/bin/ssl-remote-control -team YELLOW
 Restart=always
 
 [Install]

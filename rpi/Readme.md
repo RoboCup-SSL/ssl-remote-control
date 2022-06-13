@@ -6,10 +6,12 @@ and use the [bootstrap.sh](bootstrap.sh) script to set it up:
 
 ```shell
 # Install Raspberry Pi OS Lite (32bit) (https://www.raspberrypi.com/software/operating-systems/)
-# Setup username, password, hostname, ssh and autologin (without desktop) with
+# Use username 'ssl' or change it in autologin.conf
+# Setup username, password, hostname and ssh with
 sudo raspi-config
 # Download and extract latest bootstrap archive
 wget -qO- https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest/download/bootstrap.tar.gz | tar xvz
 # Run bootstrap script
 ./rpi/bootstrap.sh
+# Optionally change the team color to BLUE in ~/.local/share/systemd/user/ssl-remote-control.service
 ```
