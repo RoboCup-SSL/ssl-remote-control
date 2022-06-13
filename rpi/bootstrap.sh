@@ -23,7 +23,7 @@ function installRemoteControl() {
         SRC_VERSION="$(curl -s https://api.github.com/repos/RoboCup-SSL/ssl-remote-control/releases/latest | jq -r '.tag_name')"
     fi
     echo "Installing version: ${SRC_VERSION}"
-    wget "https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/v${SRC_VERSION}/ssl-remote-control_v${SRC_VERSION}_linux_arm" -O ~/.local/bin/ssl-remote-control
+    wget "https://github.com/RoboCup-SSL/ssl-remote-control/releases/download/${SRC_VERSION}/ssl-remote-control_${SRC_VERSION}_linux_arm" -O ~/.local/bin/ssl-remote-control
     chmod +x ~/.local/bin/ssl-remote-control
     systemctl --user start ssl-remote-control.service
 }
