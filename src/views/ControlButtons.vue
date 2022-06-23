@@ -56,7 +56,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
 </script>
 
 <template>
-  <div class="control-buttons-container">
+  <div class="control-buttons-container buttons-orientation">
     <RequestButton
       :can-request="canRequestChallengeFlag"
       :requested="false"
@@ -101,15 +101,30 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
 <style scoped>
 .control-buttons-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
-  gap: 1em 1em;
   padding: 1em;
   height: 100%;
   box-sizing: border-box;
 }
 
-.two-columns {
-  grid-column: 1 / 3;
+@media (min-aspect-ratio: 1/1) {
+  .buttons-orientation {
+    gap: 1em 1em;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  .two-columns {
+    grid-column: 1 / 3;
+  }
 }
+
+@media (max-aspect-ratio: 1/1) {
+  .buttons-orientation {
+    gap: 1em;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  }
+  .two-columns {
+  }
+}
+
 </style>
