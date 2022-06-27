@@ -35,7 +35,8 @@ jobs:
       - run:
           command: |
             mkdir -p release
-            tar czf release/bootstrap.tar.gz rpi
+            cp -a rpi ssl-remote-control
+            tar czf release/bootstrap.tar.gz ssl-remote-control
       - persist_to_workspace:
           root: .
           paths:
