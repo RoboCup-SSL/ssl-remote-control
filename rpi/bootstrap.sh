@@ -33,6 +33,7 @@ function installBrowser() {
     sudo apt-get install --no-install-recommends -y \
         xserver-xorg-video-all xserver-xorg-input-all xserver-xorg-core xinit x11-xserver-utils \
         unclutter \
+        xrandr \
         chromium-browser
 
     # Enable Auto-Login on console
@@ -46,7 +47,18 @@ function installBrowser() {
     cp "${SCRIPT_DIR}/.bash_profile" ~/.bash_profile
 }
 
+function configurePi() {
+    sudo cp "${SCRIPT_DIR}/config.txt" /boot/config.txt
+}
+
 sudo apt-get update
 installService
 installRemoteControl
 installBrowser
+configurePi
+
+echo "You may need to restart the system to apply some settings. Reboot now? (y/n)"
+read -r response
+if [[ "${response}" == "y" ]]; then
+    sudo reboot
+fi
