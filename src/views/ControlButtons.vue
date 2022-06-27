@@ -68,7 +68,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       :can-request="canRequestEmergencyStop"
       :requested="emergencyStopRequested"
       text="Emergency Stop"
-      :text-requested="`Cancel Emergency Stop (${state.emergencyStopIn} s left)`"
+      :text-requested="`Cancel Emergency Stop (${Math.round(state.emergencyStopIn)} s left)`"
       @request="requestEmergencyStop"
     />
     <RequestButton
