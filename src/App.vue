@@ -156,7 +156,7 @@ import StatusBar from './components/StatusBar.vue';
 /* Chromium has a minimum width of 500px, but the Pi display is only 480px, so we need to add a padding here */
 @media (max-width: 500px) {
   #app {
-    padding-right: 20px;
+    padding-right: 40px;
   }
 }
 
