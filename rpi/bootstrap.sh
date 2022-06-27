@@ -6,12 +6,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 SRC_VERSION=${1-}
 
+function updateSystem() {
+    sudo apt-get update
+    sudo apt-get -y dist-upgrade
+}
+
 function installService() {
-    if [[ ! -f ~/.local/share/systemd/user/ssl-remote-control.service ]]; then
-        mkdir -p ~/.local/share/systemd/user/
-        cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
-        systemctl --user enable ssl-remote-control.service
-    fi
+    mkdir -p ~/.local/share/systemd/user/
+    cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
+    systemctl --user enable ssl-remote-control.service
 }
 
 function installRemoteControl() {
@@ -33,7 +36,7 @@ function installBrowser() {
     sudo apt-get install --no-install-recommends -y \
         xserver-xorg-video-all xserver-xorg-input-all xserver-xorg-core xinit x11-xserver-utils \
         unclutter \
-        xrandr \
+        xinput \
         chromium-browser
 
     # Enable Auto-Login on console
@@ -51,7 +54,7 @@ function configurePi() {
     sudo cp "${SCRIPT_DIR}/config.txt" /boot/config.txt
 }
 
-sudo apt-get update
+updateSystem
 installService
 installRemoteControl
 installBrowser
