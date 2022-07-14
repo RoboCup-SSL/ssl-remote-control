@@ -1,4 +1,4 @@
-FROM node:18.3.0-alpine3.16 AS build_node
+FROM node:18.6.0-alpine3.16 AS build_node
 WORKDIR /tmp/ssl-remote-control
 COPY . .
 RUN yarn install
