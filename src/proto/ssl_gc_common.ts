@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
 
@@ -41,8 +41,9 @@ export function teamToJSON(object: Team): string {
       return "YELLOW";
     case Team.BLUE:
       return "BLUE";
+    case Team.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -80,8 +81,9 @@ export function divisionToJSON(object: Division): string {
       return "DIV_A";
     case Division.DIV_B:
       return "DIV_B";
+    case Division.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -93,7 +95,9 @@ export interface RobotId {
   team: Team;
 }
 
-const baseRobotId: object = { id: 0, team: 0 };
+function createBaseRobotId(): RobotId {
+  return { id: 0, team: 0 };
+}
 
 export const RobotId = {
   encode(
@@ -112,7 +116,7 @@ export const RobotId = {
   decode(input: _m0.Reader | Uint8Array, length?: number): RobotId {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRobotId } as RobotId;
+    const message = createBaseRobotId();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -131,25 +135,21 @@ export const RobotId = {
   },
 
   fromJSON(object: any): RobotId {
-    const message = { ...baseRobotId } as RobotId;
-    message.id =
-      object.id !== undefined && object.id !== null ? Number(object.id) : 0;
-    message.team =
-      object.team !== undefined && object.team !== null
-        ? teamFromJSON(object.team)
-        : 0;
-    return message;
+    return {
+      id: isSet(object.id) ? Number(object.id) : 0,
+      team: isSet(object.team) ? teamFromJSON(object.team) : 0,
+    };
   },
 
   toJSON(message: RobotId): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
+    message.id !== undefined && (obj.id = Math.round(message.id));
     message.team !== undefined && (obj.team = teamToJSON(message.team));
     return obj;
   },
 
-  fromPartial(object: DeepPartial<RobotId>): RobotId {
-    const message = { ...baseRobotId } as RobotId;
+  fromPartial<I extends Exact<DeepPartial<RobotId>, I>>(object: I): RobotId {
+    const message = createBaseRobotId();
     message.id = object.id ?? 0;
     message.team = object.team ?? 0;
     return message;
@@ -164,6 +164,7 @@ type Builtin =
   | number
   | boolean
   | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
@@ -178,7 +179,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -3,8 +3,9 @@
 import RequestButton from '../components/RequestButton.vue';
 import router from '../router';
 import {
-  RemoteControlTeamState,
   RemoteControlRequestType,
+  RemoteControlTeamState,
+  RemoteControlToController_Request,
 } from '../proto/ssl_gc_rcon_remotecontrol';
 import {ApiController} from '../services/ApiController';
 import {computed, inject, ref} from 'vue';
@@ -17,6 +18,7 @@ api?.RegisterStateConsumer((s) => state.value = s)
 const canRequestChallengeFlag = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHALLENGE_FLAG))
 const canRequestEmergencyStop = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const canRequestTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.TIMEOUT))
+const canStopTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.STOP_TIMEOUT))
 const canChangeKeeperId = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHANGE_KEEPER_ID))
 const canRequestRobotSubstitution = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 const emergencyStopRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
@@ -46,6 +48,12 @@ const requestTimeout = (request: boolean) => api?.Send({
     requestTimeout: request
   }
 })
+const stopTimeout = () => api?.Send({
+  msg: {
+    $case: 'request',
+    request: RemoteControlToController_Request.STOP_TIMEOUT
+  }
+})
 const requestRobotSubstitution = (request: boolean) => api?.Send({
   msg: {
     $case: 'requestRobotSubstitution',
@@ -72,6 +80,15 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       @request="requestEmergencyStop"
     />
     <RequestButton
+      v-if="canStopTimeout"
+      :can-request="true"
+      :requested="false"
+      text="Stop Timeout"
+      :text-additional="`${Math.round(state.timeoutTimeLeft)} s left`"
+      @request="stopTimeout"
+    />
+    <RequestButton
+      v-else
       :can-request="canRequestTimeout"
       :requested="timeoutRequested"
       text="Request Timeout"

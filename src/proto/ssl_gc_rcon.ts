@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
 
@@ -58,8 +58,9 @@ export function controllerReply_StatusCodeToJSON(
       return "OK";
     case ControllerReply_StatusCode.REJECTED:
       return "REJECTED";
+    case ControllerReply_StatusCode.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -100,8 +101,9 @@ export function controllerReply_VerificationToJSON(
       return "VERIFIED";
     case ControllerReply_Verification.UNVERIFIED:
       return "UNVERIFIED";
+    case ControllerReply_Verification.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -113,12 +115,9 @@ export interface Signature {
   pkcs1v15: Uint8Array;
 }
 
-const baseControllerReply: object = {
-  statusCode: 0,
-  reason: "",
-  nextToken: "",
-  verification: 0,
-};
+function createBaseControllerReply(): ControllerReply {
+  return { statusCode: 0, reason: "", nextToken: "", verification: 0 };
+}
 
 export const ControllerReply = {
   encode(
@@ -143,7 +142,7 @@ export const ControllerReply = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ControllerReply {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseControllerReply } as ControllerReply;
+    const message = createBaseControllerReply();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -168,24 +167,16 @@ export const ControllerReply = {
   },
 
   fromJSON(object: any): ControllerReply {
-    const message = { ...baseControllerReply } as ControllerReply;
-    message.statusCode =
-      object.statusCode !== undefined && object.statusCode !== null
+    return {
+      statusCode: isSet(object.statusCode)
         ? controllerReply_StatusCodeFromJSON(object.statusCode)
-        : 0;
-    message.reason =
-      object.reason !== undefined && object.reason !== null
-        ? String(object.reason)
-        : "";
-    message.nextToken =
-      object.nextToken !== undefined && object.nextToken !== null
-        ? String(object.nextToken)
-        : "";
-    message.verification =
-      object.verification !== undefined && object.verification !== null
+        : 0,
+      reason: isSet(object.reason) ? String(object.reason) : "",
+      nextToken: isSet(object.nextToken) ? String(object.nextToken) : "",
+      verification: isSet(object.verification)
         ? controllerReply_VerificationFromJSON(object.verification)
-        : 0;
-    return message;
+        : 0,
+    };
   },
 
   toJSON(message: ControllerReply): unknown {
@@ -201,8 +192,10 @@ export const ControllerReply = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ControllerReply>): ControllerReply {
-    const message = { ...baseControllerReply } as ControllerReply;
+  fromPartial<I extends Exact<DeepPartial<ControllerReply>, I>>(
+    object: I
+  ): ControllerReply {
+    const message = createBaseControllerReply();
     message.statusCode = object.statusCode ?? 0;
     message.reason = object.reason ?? "";
     message.nextToken = object.nextToken ?? "";
@@ -211,7 +204,9 @@ export const ControllerReply = {
   },
 };
 
-const baseSignature: object = { token: "" };
+function createBaseSignature(): Signature {
+  return { token: "", pkcs1v15: new Uint8Array() };
+}
 
 export const Signature = {
   encode(
@@ -230,8 +225,7 @@ export const Signature = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Signature {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseSignature } as Signature;
-    message.pkcs1v15 = new Uint8Array();
+    const message = createBaseSignature();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -250,16 +244,12 @@ export const Signature = {
   },
 
   fromJSON(object: any): Signature {
-    const message = { ...baseSignature } as Signature;
-    message.token =
-      object.token !== undefined && object.token !== null
-        ? String(object.token)
-        : "";
-    message.pkcs1v15 =
-      object.pkcs1v15 !== undefined && object.pkcs1v15 !== null
+    return {
+      token: isSet(object.token) ? String(object.token) : "",
+      pkcs1v15: isSet(object.pkcs1v15)
         ? bytesFromBase64(object.pkcs1v15)
-        : new Uint8Array();
-    return message;
+        : new Uint8Array(),
+    };
   },
 
   toJSON(message: Signature): unknown {
@@ -272,8 +262,10 @@ export const Signature = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Signature>): Signature {
-    const message = { ...baseSignature } as Signature;
+  fromPartial<I extends Exact<DeepPartial<Signature>, I>>(
+    object: I
+  ): Signature {
+    const message = createBaseSignature();
     message.token = object.token ?? "";
     message.pkcs1v15 = object.pkcs1v15 ?? new Uint8Array();
     return message;
@@ -308,9 +300,9 @@ const btoa: (bin: string) => string =
   ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
   const bin: string[] = [];
-  for (const byte of arr) {
+  arr.forEach((byte) => {
     bin.push(String.fromCharCode(byte));
-  }
+  });
   return btoa(bin.join(""));
 }
 
@@ -322,6 +314,7 @@ type Builtin =
   | number
   | boolean
   | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
@@ -336,7 +329,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -17,6 +17,6 @@ protoc -I"./proto" \
     --plugin=./node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out=./src/proto \
     --ts_proto_opt=esModuleInterop=true \
-    --ts_proto_opt=useOptionals=true \
+    --ts_proto_opt=useOptionals=messages \
     --ts_proto_opt=oneof=unions \
     ./proto/*.proto

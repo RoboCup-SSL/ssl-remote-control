@@ -16,6 +16,7 @@ if (import.meta.env.PROD) {
         challengeFlagsLeft: 0,
         emergencyStopIn: 0,
         timeoutsLeft: 0,
+        timeoutTimeLeft: 0,
     }
 } else {
     latestState = {
@@ -32,6 +33,7 @@ if (import.meta.env.PROD) {
         challengeFlagsLeft: 3,
         emergencyStopIn: 3,
         timeoutsLeft: 4,
+        timeoutTimeLeft: 251.5,
     }
 }
 
