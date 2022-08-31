@@ -7,8 +7,16 @@ A remote control web app that can be used by each SSL team to send certain comma
 
 ![Screenshot of Interface](./doc/screenshot.png)
 
-## Run on a Raspberry Pi
-See [rpi/Readme.md](rpi/Readme.md).
+## Hardware
+### Install on a Raspberry Pi
+See [rpi/Readme.md](rpi/Readme.md)
+
+### Additional hardware and housing
+The remote-control is designed to run on a Raspberry Pi 3 or 4 with the following additional components:
+
+ * Display: https://www.waveshare.com/product/4.3inch-dsi-lcd-with-case.htm
+ * PoE HAT: https://www.rasppishop.de/RPi-PoE-HAT?shop=GH
+ * Custom 3d-printed housing, see [housing](./housing)
 
 ## Usage
 If you just want to use this app, simply download the latest [release binary](https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest).
