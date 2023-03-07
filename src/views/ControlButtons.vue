@@ -108,7 +108,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       :can-request="canRequestRobotSubstitution"
       :requested="robotSubstitutionRequested"
       text="Robot Substitution"
-      text-requested="Cancel Robot Substitution"
+      text-requested="Stop Robot Substitution"
       :text-additional="robotDiff"
       @request="requestRobotSubstitution"
     />
