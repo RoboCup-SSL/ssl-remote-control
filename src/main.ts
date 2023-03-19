@@ -17,6 +17,7 @@ if (import.meta.env.PROD) {
         emergencyStopIn: 0,
         timeoutsLeft: 0,
         timeoutTimeLeft: 0,
+        canSubstituteRobot: false,
     }
 } else {
     latestState = {
@@ -34,6 +35,7 @@ if (import.meta.env.PROD) {
         emergencyStopIn: 3,
         timeoutsLeft: 4,
         timeoutTimeLeft: 251.5,
+        canSubstituteRobot: false,
     }
 }
 
