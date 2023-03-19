@@ -1,21 +1,53 @@
 #!/bin/bash
+set -euo pipefail
 
-# Fail on errors
-set -e
+PB_VERSION=3.15.8
+PB_GO_VERSION=$(go list -m all | grep google.golang.org/protobuf | awk '{print $2}')
+
+# Create a local bin folder
+LOCAL_DIR=".local"
+mkdir -p "${LOCAL_DIR}"
+
+# install a specific version of protoc
+PB_REL="https://github.com/protocolbuffers/protobuf/releases"
+if ! protoc --version | grep "${PB_VERSION}" >/dev/null; then
+  if [[ ! -f "${LOCAL_DIR}/bin/protoc" ]]; then
+    curl -sLO "$PB_REL/download/v${PB_VERSION}/protoc-${PB_VERSION}-linux-x86_64.zip"
+    unzip "protoc-${PB_VERSION}-linux-x86_64.zip" -d "${LOCAL_DIR}"
+    rm "protoc-${PB_VERSION}-linux-x86_64.zip"
+  fi
+  export PATH="${LOCAL_DIR}/bin:$PATH"
+fi
+
+# install a specific version of protoc-gen-go
+go install "google.golang.org/protobuf/...@${PB_GO_VERSION}"
+
+###
+
+if ! protoc --version | grep "${PB_VERSION}"; then
+  echo "protoc version is not ${PB_VERSION}"
+  exit 1
+fi
+
+if ! protoc-gen-go --version | grep "${PB_GO_VERSION}"; then
+  echo "protoc-gen-go version is not ${PB_GO_VERSION}"
+  exit 1
+fi
+
+###
+
 # Print commands
 set -x
-
-# Update to latest protobuf compiler
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 # Generate all protobuf code
 protoc -I"./proto" -I"$GOPATH/src" --go_out="$GOPATH/src" proto/*.proto
 
-# generate javascript code
-mkdir -p src/proto
+# generate typescript code
+target_dir="./src/proto"
+mkdir -p "${target_dir}"
 protoc -I"./proto" \
     --plugin=./node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out=./src/proto \
+    --ts_proto_out="${target_dir}" \
     --ts_proto_opt=esModuleInterop=true \
     --ts_proto_opt=useOptionals=messages \
     --ts_proto_opt=oneof=unions \
