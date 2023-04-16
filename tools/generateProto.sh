@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+# determine current script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+PROJECT_DIR="${SCRIPT_DIR}/.."
+cd "${PROJECT_DIR}"
+
 PB_VERSION=3.15.8
 PB_GO_VERSION=$(go list -m all | grep google.golang.org/protobuf | awk '{print $2}')
 
@@ -11,12 +16,12 @@ mkdir -p "${LOCAL_DIR}"
 # install a specific version of protoc
 PB_REL="https://github.com/protocolbuffers/protobuf/releases"
 if ! protoc --version | grep "${PB_VERSION}" >/dev/null; then
-  if [[ ! -f "${LOCAL_DIR}/bin/protoc" ]]; then
-    curl -sLO "$PB_REL/download/v${PB_VERSION}/protoc-${PB_VERSION}-linux-x86_64.zip"
-    unzip "protoc-${PB_VERSION}-linux-x86_64.zip" -d "${LOCAL_DIR}"
-    rm "protoc-${PB_VERSION}-linux-x86_64.zip"
-  fi
-  export PATH="${LOCAL_DIR}/bin:$PATH"
+    if [[ ! -f "${LOCAL_DIR}/bin/protoc" ]]; then
+        curl -sLO "$PB_REL/download/v${PB_VERSION}/protoc-${PB_VERSION}-linux-x86_64.zip"
+        unzip "protoc-${PB_VERSION}-linux-x86_64.zip" -d "${LOCAL_DIR}"
+        rm "protoc-${PB_VERSION}-linux-x86_64.zip"
+    fi
+    export PATH="${LOCAL_DIR}/bin:$PATH"
 fi
 
 # install a specific version of protoc-gen-go
@@ -25,13 +30,13 @@ go install "google.golang.org/protobuf/...@${PB_GO_VERSION}"
 ###
 
 if ! protoc --version | grep "${PB_VERSION}"; then
-  echo "protoc version is not ${PB_VERSION}"
-  exit 1
+    echo "protoc version is not ${PB_VERSION}"
+    exit 1
 fi
 
 if ! protoc-gen-go --version | grep "${PB_GO_VERSION}"; then
-  echo "protoc-gen-go version is not ${PB_GO_VERSION}"
-  exit 1
+    echo "protoc-gen-go version is not ${PB_GO_VERSION}"
+    exit 1
 fi
 
 ###
@@ -42,11 +47,11 @@ set -x
 # Generate all protobuf code
 protoc -I"./proto" -I"$GOPATH/src" --go_out="$GOPATH/src" proto/*.proto
 
-# generate typescript code
-target_dir="./src/proto"
+# generate typescript code for frontend
+target_dir="./frontend/src/proto"
 mkdir -p "${target_dir}"
 protoc -I"./proto" \
-    --plugin=./node_modules/.bin/protoc-gen-ts_proto \
+    --plugin=./frontend/node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out="${target_dir}" \
     --ts_proto_opt=esModuleInterop=true \
     --ts_proto_opt=useOptionals=messages \

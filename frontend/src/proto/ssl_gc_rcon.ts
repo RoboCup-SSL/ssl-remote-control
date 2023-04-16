@@ -1,5 +1,6 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal";
+import Long from "long";
+import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
 
@@ -27,7 +28,9 @@ export enum ControllerReply_StatusCode {
   UNRECOGNIZED = -1,
 }
 
-export function controllerReply_StatusCodeFromJSON(object: any): ControllerReply_StatusCode {
+export function controllerReply_StatusCodeFromJSON(
+  object: any
+): ControllerReply_StatusCode {
   switch (object) {
     case 0:
     case "UNKNOWN_STATUS_CODE":
@@ -45,7 +48,9 @@ export function controllerReply_StatusCodeFromJSON(object: any): ControllerReply
   }
 }
 
-export function controllerReply_StatusCodeToJSON(object: ControllerReply_StatusCode): string {
+export function controllerReply_StatusCodeToJSON(
+  object: ControllerReply_StatusCode
+): string {
   switch (object) {
     case ControllerReply_StatusCode.UNKNOWN_STATUS_CODE:
       return "UNKNOWN_STATUS_CODE";
@@ -66,7 +71,9 @@ export enum ControllerReply_Verification {
   UNRECOGNIZED = -1,
 }
 
-export function controllerReply_VerificationFromJSON(object: any): ControllerReply_Verification {
+export function controllerReply_VerificationFromJSON(
+  object: any
+): ControllerReply_Verification {
   switch (object) {
     case 0:
     case "UNKNOWN_VERIFICATION":
@@ -84,7 +91,9 @@ export function controllerReply_VerificationFromJSON(object: any): ControllerRep
   }
 }
 
-export function controllerReply_VerificationToJSON(object: ControllerReply_Verification): string {
+export function controllerReply_VerificationToJSON(
+  object: ControllerReply_Verification
+): string {
   switch (object) {
     case ControllerReply_Verification.UNKNOWN_VERIFICATION:
       return "UNKNOWN_VERIFICATION";
@@ -111,7 +120,10 @@ function createBaseControllerReply(): ControllerReply {
 }
 
 export const ControllerReply = {
-  encode(message: ControllerReply, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ControllerReply,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.statusCode !== 0) {
       writer.uint32(8).int32(message.statusCode);
     }
@@ -156,23 +168,33 @@ export const ControllerReply = {
 
   fromJSON(object: any): ControllerReply {
     return {
-      statusCode: isSet(object.statusCode) ? controllerReply_StatusCodeFromJSON(object.statusCode) : 0,
+      statusCode: isSet(object.statusCode)
+        ? controllerReply_StatusCodeFromJSON(object.statusCode)
+        : 0,
       reason: isSet(object.reason) ? String(object.reason) : "",
       nextToken: isSet(object.nextToken) ? String(object.nextToken) : "",
-      verification: isSet(object.verification) ? controllerReply_VerificationFromJSON(object.verification) : 0,
+      verification: isSet(object.verification)
+        ? controllerReply_VerificationFromJSON(object.verification)
+        : 0,
     };
   },
 
   toJSON(message: ControllerReply): unknown {
     const obj: any = {};
-    message.statusCode !== undefined && (obj.statusCode = controllerReply_StatusCodeToJSON(message.statusCode));
+    message.statusCode !== undefined &&
+      (obj.statusCode = controllerReply_StatusCodeToJSON(message.statusCode));
     message.reason !== undefined && (obj.reason = message.reason);
     message.nextToken !== undefined && (obj.nextToken = message.nextToken);
-    message.verification !== undefined && (obj.verification = controllerReply_VerificationToJSON(message.verification));
+    message.verification !== undefined &&
+      (obj.verification = controllerReply_VerificationToJSON(
+        message.verification
+      ));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<ControllerReply>, I>>(object: I): ControllerReply {
+  fromPartial<I extends Exact<DeepPartial<ControllerReply>, I>>(
+    object: I
+  ): ControllerReply {
     const message = createBaseControllerReply();
     message.statusCode = object.statusCode ?? 0;
     message.reason = object.reason ?? "";
@@ -187,7 +209,10 @@ function createBaseSignature(): Signature {
 }
 
 export const Signature = {
-  encode(message: Signature, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Signature,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.token !== "") {
       writer.uint32(10).string(message.token);
     }
@@ -221,7 +246,9 @@ export const Signature = {
   fromJSON(object: any): Signature {
     return {
       token: isSet(object.token) ? String(object.token) : "",
-      pkcs1v15: isSet(object.pkcs1v15) ? bytesFromBase64(object.pkcs1v15) : new Uint8Array(),
+      pkcs1v15: isSet(object.pkcs1v15)
+        ? bytesFromBase64(object.pkcs1v15)
+        : new Uint8Array(),
     };
   },
 
@@ -229,11 +256,15 @@ export const Signature = {
     const obj: any = {};
     message.token !== undefined && (obj.token = message.token);
     message.pkcs1v15 !== undefined &&
-      (obj.pkcs1v15 = base64FromBytes(message.pkcs1v15 !== undefined ? message.pkcs1v15 : new Uint8Array()));
+      (obj.pkcs1v15 = base64FromBytes(
+        message.pkcs1v15 !== undefined ? message.pkcs1v15 : new Uint8Array()
+      ));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Signature>, I>>(object: I): Signature {
+  fromPartial<I extends Exact<DeepPartial<Signature>, I>>(
+    object: I
+  ): Signature {
     const message = createBaseSignature();
     message.token = object.token ?? "";
     message.pkcs1v15 = object.pkcs1v15 ?? new Uint8Array();
@@ -244,58 +275,72 @@ export const Signature = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
   throw "Unable to locate global object";
 })();
 
+const atob: (b64: string) => string =
+  globalThis.atob ||
+  ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  if (tsProtoGlobalThis.Buffer) {
-    return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, "base64"));
-  } else {
-    const bin = tsProtoGlobalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; ++i) {
+    arr[i] = bin.charCodeAt(i);
   }
+  return arr;
 }
 
+const btoa: (bin: string) => string =
+  globalThis.btoa ||
+  ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  if (tsProtoGlobalThis.Buffer) {
-    return tsProtoGlobalThis.Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(String.fromCharCode(byte));
-    });
-    return tsProtoGlobalThis.btoa(bin.join(""));
-  }
+  const bin: string[] = [];
+  arr.forEach((byte) => {
+    bin.push(String.fromCharCode(byte));
+  });
+  return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends { $case: string }
+  ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & {
+      $case: T["$case"];
+    }
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

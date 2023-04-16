@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {inject, ref} from 'vue';
+import {inject} from 'vue';
 import {RemoteControlToController_Request} from '../proto/ssl_gc_rcon_remotecontrol';
 import {ApiController} from '../services/ApiController';
 import router from '../router';
