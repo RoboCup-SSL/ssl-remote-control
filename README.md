@@ -16,7 +16,7 @@ The remote-control is designed to run on a Raspberry Pi 3 or 4 with the followin
 
  * Display: https://www.waveshare.com/product/4.3inch-dsi-lcd-with-case.htm
  * PoE HAT: https://www.rasppishop.de/RPi-PoE-HAT?shop=GH
- * Custom 3d-printed housing, see [housing](./housing)
+ * Custom 3d-printed housing, see [doc/housing](./doc/housing)
 
 ## Usage
 If you just want to use this app, simply download the latest [release binary](https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest).
@@ -33,49 +33,34 @@ By default, the UI is available at http://localhost:8083
 ## Development
 
 ### Requirements
-You need to install following dependencies first: 
- * Go >= 1.17
- * Node >= 10
- * Yarn
 
-### Prepare
-Download and install to [GOPATH](https://github.com/golang/go/wiki/GOPATH):
+You need to install following dependencies first:
+
+* Go
+* Node
+
+See [.circleci/config.yml](.circleci/config.yml) for compatible versions.
+
+### Frontend
+
+See [frontend/README.md](frontend/README.md)
+
+### Build
+Build and install all binaries:
+
 ```bash
-go get -u github.com/RoboCup-SSL/ssl-remote-control/...
-```
-Switch to project root directory
-```bash
-cd $GOPATH/src/github.com/RoboCup-SSL/ssl-remote-control/
-```
-Download dependencies for frontend
-```bash
-yarn install
+make install
 ```
 
 ### Run
-Run the backend:
+
 ```bash
 go run cmd/ssl-remote-control/main.go
 ```
 
-Run the UI:
-```bash
-# compile and hot-reload
-yarn dev
-```
-Or use the provided IntelliJ run configurations.
+### Update generated protobuf code
+Generate the code for the `.proto` files after you've changed anything in a `.proto` file with:
 
-### Build self-contained release binary
-First, build the UI resources
-```bash
-# compile and minify UI
-yarn build
-```
-Then build the backend with `packr`
-```bash
-# get packr
-go get github.com/gobuffalo/packr/packr
-# install the binary
-cd cmd/ssl-remote-control
-packr install
+```shell
+make proto
 ```

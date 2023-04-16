@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	"github.com/RoboCup-SSL/ssl-remote-control/frontend"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/rcon"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/server"
 	"github.com/RoboCup-SSL/ssl-remote-control/internal/sslnet"
-	"github.com/RoboCup-SSL/ssl-remote-control/internal/ui"
 	"log"
 	"net/http"
 )
@@ -32,7 +32,7 @@ func main() {
 		c.Start(*remoteControlAddress)
 	}
 
-	ui.HandleUi()
+	frontend.HandleUi()
 
 	// serve the bidirectional web socket
 	http.HandleFunc("/api/control", s.WsHandler)
