@@ -72,6 +72,10 @@ jobs:
       - attach_workspace:
           at: .
       - run: |
+          mkdir -p release
+          cp -a rpi ssl-remote-control
+          tar czf release/bootstrap.tar.gz ssl-remote-control
+      - run: |
           set -u
           go install github.com/tcnksm/ghr@v0.16.0
           ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete -generatenotes ${CIRCLE_TAG} ./release
