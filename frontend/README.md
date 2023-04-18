@@ -1,4 +1,4 @@
-# frontend
+# Frontend
 
 ## Project Setup
 
@@ -6,13 +6,13 @@
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Compile and Hot-Reload for Development
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Type-Check, Compile and Minify for Production
 
 ```sh
 npm run build

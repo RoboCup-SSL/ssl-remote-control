@@ -1,11 +1,15 @@
-.PHONY: all docker frontend test install proto
+CMDS = ssl-remote-control
+DOCKER_TARGETS = $(addprefix docker-, $(CMDS))
+.PHONY: all docker frontend install test run proto $(DOCKER_TARGETS)
 
 all: install docker
 
-docker:
-	docker build -f ./cmd/ssl-remote-control/Dockerfile -t ssl-remote-control:latest .
+docker: $(DOCKER_TARGETS)
 
-.frontend: $(shell find frontend/ -type f)
+$(DOCKER_TARGETS): docker-%:
+	docker build --build-arg cmd=$* -t $*:latest .
+
+.frontend: $(shell find frontend/ -type f -not -path "frontend/node_modules/*")
 	cd frontend && \
 	npm install && \
 	npm run build && \
@@ -13,11 +17,14 @@ docker:
 
 frontend: .frontend
 
+install: frontend
+	go install -v ./...
+
 test: frontend
 	go test ./...
 
-install: frontend
-	go install -v ./...
+run: frontend
+	go run ./cmd/$(word 1,$(CMDS))
 
 proto:
 	tools/generateProto.sh

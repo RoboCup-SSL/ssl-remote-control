@@ -23,7 +23,7 @@ If you just want to use this app, simply download the latest [release binary](ht
 The binary is self-contained. No dependencies are required.
 
 You can also use pre-build docker images:
-```shell script
+```shell
 docker pull robocupssl/ssl-remote-control
 docker run -p 8083:8083 robocupssl/ssl-remote-control
 ```
@@ -48,14 +48,15 @@ See [frontend/README.md](frontend/README.md)
 ### Build
 Build and install all binaries:
 
-```bash
+```shell
 make install
 ```
 
 ### Run
+Build and run main binary:
 
-```bash
-go run cmd/ssl-remote-control/main.go
+```shell
+make run
 ```
 
 ### Update generated protobuf code

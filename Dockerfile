@@ -5,14 +5,19 @@ RUN npm install
 RUN npm run build
 
 FROM golang:1.20-alpine AS build_go
-WORKDIR backend
+ARG cmd=ssl-remote-control
+WORKDIR work
 COPY . .
 COPY --from=build_node frontend/dist frontend/dist
-RUN go install -v ./cmd/ssl-remote-control
+RUN go install ./cmd/${cmd}
 
 # Start fresh from a smaller image
 FROM alpine:3
-COPY --from=build_go /go/bin/ssl-remote-control /app/ssl-remote-control
+ARG cmd
+COPY --from=build_go /go/bin/${cmd} /app/${cmd}
+WORKDIR /data
+RUN chown 1000: /data
 USER 1000
-ENTRYPOINT ["/app/ssl-remote-control"]
+ENV COMMAND="/app/${cmd}"
+ENTRYPOINT "${COMMAND}"
 CMD []
