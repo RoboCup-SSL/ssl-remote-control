@@ -3,8 +3,12 @@
 
 # ssl-remote-control
 
-A remote control web app that can be used by each SSL team to send certain commands to the ssl-game-controller.
+A remote control web app that can be used by the playing teams to send certain commands to the ssl-game-controller.
 
+The SSL has multiple devices for the RoboCup:
+![Remote Control](./doc/remote-control.jpg)
+
+Web Interface:
 ![Screenshot of Interface](./doc/screenshot.png)
 
 ## Hardware
