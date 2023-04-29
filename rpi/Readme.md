@@ -14,3 +14,8 @@ wget -qO- https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest/down
 ./ssl-remote-control/bootstrap.sh
 # Optionally change the team color to BLUE in ~/.local/share/systemd/user/ssl-remote-control.service
 ```
+
+Note: Chromium has a minimum window size of 500px, but the currently used Raspberry PI display is only 480x800px.
+In portrait mode, 20px on the right are cut-off.
+
+As an alternativ, [nw.js](https://docs.nwjs.io/en/latest/) is used. They do not provide arm builds, though, so the nw.js binary is taken from https://github.com/LeonardLaszlo/nw.js-armv7-binaries, specifically from an APT repository: https://github.com/LeonardLaszlo/nw.js-armv7-binaries/issues/47.

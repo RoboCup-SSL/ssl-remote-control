@@ -50,6 +50,15 @@ function installBrowser() {
     cp "${SCRIPT_DIR}/.bash_profile" ~/.bash_profile
 }
 
+function install_nwjs() {
+    sudo apt install apt-transport-https
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DB348A58A292E9BC
+    echo "deb https://repo.netsyms.com/apt main main" | sudo tee /etc/apt/sources.list.d/netsyms.list
+    sudo apt update
+    mkdir -p ~/nwjs
+    cp "${SCRIPT_DIR}/package.json" ~/nwjs
+}
+
 function configurePi() {
     sudo cp "${SCRIPT_DIR}/config.txt" /boot/config.txt
 }
@@ -58,6 +67,7 @@ updateSystem
 installService
 installRemoteControl
 installBrowser
+install_nwjs
 configurePi
 
 echo "You may need to restart the system to apply some settings. Reboot now? (y/n)"

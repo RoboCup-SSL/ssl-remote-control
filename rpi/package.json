@@ -1,0 +1,9 @@
+{
+  "name": "ssl-remote-control",
+  "main": "http://localhost:8083",
+  "window": {
+    "kiosk": true,
+    "width": 480,
+    "height": 800
+  }
+}
