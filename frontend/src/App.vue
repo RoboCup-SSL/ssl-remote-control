@@ -40,11 +40,25 @@ api?.RegisterStateConsumer((s) => {
   width: 100%;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 #main {
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.5vh 0.5vw;
+  padding: 1vh 1vw;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -169,12 +183,4 @@ api?.RegisterStateConsumer((s) => {
   background: #269CE9;
   color: #93D5FF;
 }
-
-/* Chromium has a minimum width of 500px, but the Pi display is only 480px, so we need to add a padding here */
-@media (max-width: 500px) {
-  #app {
-    padding-right: 40px;
-  }
-}
-
 </style>

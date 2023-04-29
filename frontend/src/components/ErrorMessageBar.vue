@@ -34,6 +34,5 @@ api?.RegisterErrorConsumer((s) => {
 <style scoped>
 .error-message {
   text-align: center;
-  height: 1em;
 }
 </style>

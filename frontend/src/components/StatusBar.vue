@@ -27,26 +27,27 @@ online.value = false
 </script>
 
 <template>
-  <div>
+  <div class="online-state" :class="{online: online, offline: !online}"/>
+
+  <div class="left-bar">
+    <div class="left-bar-element">
+      Robots: <strong>{{ numRobots }}</strong> / <strong>{{ maxRobots }}</strong>
+    </div>
     <div class="left-bar-element">
       Yellow cards due:
       <span class="yellow-card-time" v-for="yellowCardDue of yellowCardsDue">{{ Math.round(yellowCardDue) }}s</span>
-    </div>
-    <div class="right-bar-element online-state" :class="{online: online, offline: !online}"/>
-    <div class="right-bar-element">
-      Robots: <strong>{{ numRobots }}</strong> / <strong>{{ maxRobots }}</strong>
     </div>
   </div>
 </template>
 
 <style scoped>
-.right-bar-element {
-  float: right;
-  margin-left: 1em;
+.left-bar {
+  width: 80%;
 }
 
 .left-bar-element {
   float: left;
+  text-align: left;
   margin-right: 1em;
 }
 
@@ -59,6 +60,9 @@ online.value = false
   width: 1em;
   height: 1em;
   border-radius: 1em;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
 }
 
 .online-state.online {
