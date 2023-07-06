@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
@@ -55,6 +55,7 @@ function install_nwjs() {
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DB348A58A292E9BC
     echo "deb https://repo.netsyms.com/apt main main" | sudo tee /etc/apt/sources.list.d/netsyms.list
     sudo apt update
+    sudo apt install nw.js-normal
     mkdir -p ~/nwjs
     cp "${SCRIPT_DIR}/package.json" ~/nwjs
 }
