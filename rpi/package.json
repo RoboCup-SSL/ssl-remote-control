@@ -1,6 +1,7 @@
 {
   "name": "ssl-remote-control",
   "main": "http://localhost:8083",
+  "chromium-args": "--disable-pinch",
   "window": {
     "kiosk": true,
     "width": 480,
