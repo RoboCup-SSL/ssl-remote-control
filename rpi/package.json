@@ -1,7 +1,7 @@
 {
   "name": "ssl-remote-control",
   "main": "http://localhost:8083",
-  "chromium-args": "--disable-pinch",
+  "chromium-args": "--disable-pinch --overscroll-history-navigation=0",
   "window": {
     "kiosk": true,
     "width": 480,
