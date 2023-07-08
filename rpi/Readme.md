@@ -22,7 +22,7 @@ wget -qO- https://github.com/RoboCup-SSL/ssl-remote-control/releases/latest/down
 ```
 ### Optionally change the team color to BLUE in 
 ```shell
-~/.config/ssl-remote-control/remote-control-config.txt
+~/.config/ssl-remote-control/remote-control-config.env
 ```
 ## Note an Chromium vs. nw.js
 
