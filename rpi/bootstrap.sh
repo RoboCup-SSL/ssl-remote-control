@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-CONFIG_FILE_DIR="/etc/ssl/remote-control-config.txt"
+CONFIG_FILE_DIR=~/.config/remote-control-config.txt
 SRC_VERSION=${1-}
 
 function updateSystem() {
@@ -19,7 +19,7 @@ function installService() {
         echo "Copying remote control configuration file to ${CONFIG_FILE_DIR}"
         sudo cp "${SCRIPT_DIR}/remote-control-config.txt ${CONFIG_FILE_DIR}"
     else
-        echo "Found remote control configuration file at ${CONFIG_FILE_DIR}. skipping"
+        echo "Found remote control configuration file at ${CONFIG_FILE_DIR}   skipping"
     fi
 }
 
