@@ -4,8 +4,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-EnvironmentFile=~/.config/ssl-remote-control/remote-control-config.env
-ExecStart=%h/.local/bin/ssl-remote-control -team $TEAM_COLOR
+EnvironmentFile=%h/.config/ssl-remote-control/remote-control-config.env
+ExecStart=%h/.local/bin/ssl-remote-control -team ${TEAM_COLOR}
 Restart=always
 RestartSec=5
 StartLimitInterval=0
