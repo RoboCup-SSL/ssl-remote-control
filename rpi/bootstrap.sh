@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-CONFIG_FILE_DIR="/etc/ssl/recmote-control-config.txt"
+CONFIG_FILE_DIR="/etc/ssl/remote-control-config.txt"
 SRC_VERSION=${1-}
 
 function updateSystem() {
