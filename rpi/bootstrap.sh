@@ -17,7 +17,7 @@ function installService() {
     systemctl --user enable ssl-remote-control.service
     if [[ ! -f "${CONFIG_FILE_DIR}" ]]; then
         echo "Copying remote control configuration file to ${CONFIG_FILE_DIR}"
-        cp "${SCRIPT_DIR}/remote-control-config.txt ${CONFIG_FILE_DIR}"
+        cp "${SCRIPT_DIR}/remote-control-config.env ${CONFIG_FILE_DIR}"
     else
         echo "Found remote control configuration file at ${CONFIG_FILE_DIR}   skipping"
     fi
