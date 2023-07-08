@@ -4,7 +4,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/ssl-remote-control -team YELLOW
+EnvironmentFile=/etc/ssl/remote-control-config.txt
+ExecStart=%h/.local/bin/ssl-remote-control -team $team
 Restart=always
 RestartSec=5
 StartLimitInterval=0
