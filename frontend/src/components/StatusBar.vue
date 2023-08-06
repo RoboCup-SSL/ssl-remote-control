@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import {ApiController} from '../services/ApiController';
-import {inject, ref} from 'vue';
+import {computed, inject, ref} from 'vue';
+import {Team} from "../proto/ssl_gc_common";
 
 const defaultYellowCardsDue: number[] = []
 const online = ref(false)
+const team = ref(Team.UNKNOWN)
 const maxRobots = ref(0)
 const numRobots = ref(0)
 const yellowCardsDue = ref(defaultYellowCardsDue)
 const api = inject<ApiController>('api')
 let onlineTimer: NodeJS.Timeout
+const onlineStateColor = computed(() => {
+  if (!online.value) {
+    return '#ff0000'
+  } else if (team.value === Team.BLUE) {
+    return '#4f84f1'
+  } else if (team.value === Team.YELLOW) {
+    return '#f7f422'
+  }
+  return '#42b983'
+})
 
 api?.RegisterStateConsumer((s) => {
   online.value = true
+  team.value = s.team || Team.UNKNOWN
   maxRobots.value = s.maxRobots
   numRobots.value = s.robotsOnField
   yellowCardsDue.value = s.yellowCardsDue.sort((a: number, b: number) => a - b)
@@ -27,7 +40,7 @@ online.value = false
 </script>
 
 <template>
-  <div class="online-state" :class="{online: online, offline: !online}"/>
+  <div class="online-state" :style="{'background-color': onlineStateColor}"/>
 
   <div class="left-bar">
     <div class="left-bar-element">
@@ -63,13 +76,5 @@ online.value = false
   position: absolute;
   right: 0.5em;
   top: 0.5em;
-}
-
-.online-state.online {
-  background-color: #42b983;
-}
-
-.online-state.offline {
-  background-color: red;
 }
 </style>

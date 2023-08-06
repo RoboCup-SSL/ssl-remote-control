@@ -3,10 +3,12 @@ import App from './App.vue'
 import router from './router';
 import {ApiController} from './services/ApiController';
 import {RemoteControlRequestType, RemoteControlTeamState} from './proto/ssl_gc_rcon_remotecontrol';
+import {Team} from "./proto/ssl_gc_common";
 
 let latestState: RemoteControlTeamState
 if (import.meta.env.PROD) {
     latestState = {
+        team: Team.UNKNOWN,
         availableRequests: [],
         activeRequests: [],
         yellowCardsDue: [],
@@ -21,6 +23,7 @@ if (import.meta.env.PROD) {
     }
 } else {
     latestState = {
+        team: Team.BLUE,
         availableRequests: [
             RemoteControlRequestType.CHANGE_KEEPER_ID,
             RemoteControlRequestType.CHALLENGE_FLAG,
