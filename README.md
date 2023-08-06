@@ -29,10 +29,10 @@ The binary is self-contained. No dependencies are required.
 You can also use pre-build docker images:
 ```shell
 docker pull robocupssl/ssl-remote-control
-docker run -p 8083:8083 robocupssl/ssl-remote-control
+docker run -p 8084:8084 robocupssl/ssl-remote-control
 ```
 
-By default, the UI is available at http://localhost:8083
+By default, the UI is available at http://localhost:8084
 
 ## Development
 

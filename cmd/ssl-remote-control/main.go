@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-var address = flag.String("address", ":8083", "The address on which the UI and API is served, default: :8083")
+var address = flag.String("address", ":8084", "The address on which the UI and API is served, default: :8084")
 var refereeAddress = flag.String("refereeAddress", "224.5.23.1:10003", "The multicast address of the referee (GC), default: 224.5.23.1:10003")
 var remoteControlAddress = flag.String("remoteControlAddress", "localhost:10011", "Address to connect to")
 var autoDetectHost = flag.Bool("autoDetectHost", true, "Automatically detect the game-controller host and replace it with the host given in address")
