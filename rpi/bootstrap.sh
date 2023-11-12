@@ -4,7 +4,7 @@ set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 CONFIG_FILE_DIR="$HOME/.config/ssl-remote-control/remote-control-config.env"
-SRC_VERSION=${1-}
+SRC_VERSION=${1:-}
 
 function updateSystem() {
     sudo apt-get update
