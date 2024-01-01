@@ -12,7 +12,7 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.1",
+    "@vitejs/plugin-vue": "^5.0.0",
     "ts-proto": "1.165.0",
     "typescript": "^5.0.4",
     "vite": "^5.0.0",
