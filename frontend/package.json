@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.1",
-    "ts-proto": "1.165.0",
+    "ts-proto": "1.166.2",
     "typescript": "^5.0.4",
     "vite": "^5.0.0",
     "@babel/types": "^7.21.4",
