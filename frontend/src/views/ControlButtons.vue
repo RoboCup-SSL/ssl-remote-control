@@ -25,14 +25,17 @@ const emergencyStopRequested = computed(() => state.value.activeRequests.include
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
 const robotSubstitutionRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 const robotDiff = computed(() => {
-  const diff = state.value.maxRobots - state.value.robotsOnField
-  if (diff > 0) {
-    return `Add up to ${diff} robots`
+  const botSubstitutionsLeftMsg = `${state.value.botSubstitutionsLeft} free left`
+  if (state.value.botSubstitutionTimeLeft > 0) {
+    return `${botSubstitutionsLeftMsg} (${Math.round(state.value.botSubstitutionTimeLeft)} s)`
   }
-  if (diff < 0) {
-    return `Remove ${diff} robots`
+  return botSubstitutionsLeftMsg
+})
+const botSubstitutionRequestedMsg = computed(() => {
+  if (state.value.canSubstituteRobot) {
+    return 'Finish Robot Substitution'
   }
-  return ''
+  return 'Cancel Robot Substitution Request'
 })
 
 const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
@@ -107,8 +110,8 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       class="two-columns"
       :can-request="canRequestRobotSubstitution"
       :requested="robotSubstitutionRequested"
-      text="Robot Substitution"
-      text-requested="Stop Robot Substitution"
+      text="Request Robot Substitution"
+      :text-requested="botSubstitutionRequestedMsg"
       :text-additional="robotDiff"
       @request="requestRobotSubstitution"
     />

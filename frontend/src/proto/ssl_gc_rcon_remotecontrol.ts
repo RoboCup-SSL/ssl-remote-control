@@ -174,6 +174,10 @@ export interface RemoteControlTeamState {
   yellowCardsDue: number[];
   /** if true, team is allowed to substitute robots */
   canSubstituteRobot: boolean;
+  /** number of bot substitutions left by the team in this halftime */
+  botSubstitutionsLeft: number;
+  /** number of seconds left for current bot substitution */
+  botSubstitutionTimeLeft: number;
 }
 
 function createBaseRemoteControlRegistration(): RemoteControlRegistration {
@@ -507,6 +511,8 @@ function createBaseRemoteControlTeamState(): RemoteControlTeamState {
     robotsOnField: 0,
     yellowCardsDue: [],
     canSubstituteRobot: false,
+    botSubstitutionsLeft: 0,
+    botSubstitutionTimeLeft: 0,
   };
 }
 
@@ -553,6 +559,12 @@ export const RemoteControlTeamState = {
     writer.ldelim();
     if (message.canSubstituteRobot === true) {
       writer.uint32(88).bool(message.canSubstituteRobot);
+    }
+    if (message.botSubstitutionsLeft !== 0) {
+      writer.uint32(104).uint32(message.botSubstitutionsLeft);
+    }
+    if (message.botSubstitutionTimeLeft !== 0) {
+      writer.uint32(117).float(message.botSubstitutionTimeLeft);
     }
     return writer;
   },
@@ -675,6 +687,20 @@ export const RemoteControlTeamState = {
 
           message.canSubstituteRobot = reader.bool();
           continue;
+        case 13:
+          if (tag != 104) {
+            break;
+          }
+
+          message.botSubstitutionsLeft = reader.uint32();
+          continue;
+        case 14:
+          if (tag != 117) {
+            break;
+          }
+
+          message.botSubstitutionTimeLeft = reader.float();
+          continue;
       }
       if ((tag & 7) == 4 || tag == 0) {
         break;
@@ -702,6 +728,8 @@ export const RemoteControlTeamState = {
       robotsOnField: isSet(object.robotsOnField) ? Number(object.robotsOnField) : 0,
       yellowCardsDue: Array.isArray(object?.yellowCardsDue) ? object.yellowCardsDue.map((e: any) => Number(e)) : [],
       canSubstituteRobot: isSet(object.canSubstituteRobot) ? Boolean(object.canSubstituteRobot) : false,
+      botSubstitutionsLeft: isSet(object.botSubstitutionsLeft) ? Number(object.botSubstitutionsLeft) : 0,
+      botSubstitutionTimeLeft: isSet(object.botSubstitutionTimeLeft) ? Number(object.botSubstitutionTimeLeft) : 0,
     };
   },
 
@@ -731,6 +759,8 @@ export const RemoteControlTeamState = {
       obj.yellowCardsDue = [];
     }
     message.canSubstituteRobot !== undefined && (obj.canSubstituteRobot = message.canSubstituteRobot);
+    message.botSubstitutionsLeft !== undefined && (obj.botSubstitutionsLeft = Math.round(message.botSubstitutionsLeft));
+    message.botSubstitutionTimeLeft !== undefined && (obj.botSubstitutionTimeLeft = message.botSubstitutionTimeLeft);
     return obj;
   },
 
@@ -752,6 +782,8 @@ export const RemoteControlTeamState = {
     message.robotsOnField = object.robotsOnField ?? 0;
     message.yellowCardsDue = object.yellowCardsDue?.map((e) => e) || [];
     message.canSubstituteRobot = object.canSubstituteRobot ?? false;
+    message.botSubstitutionsLeft = object.botSubstitutionsLeft ?? 0;
+    message.botSubstitutionTimeLeft = object.botSubstitutionTimeLeft ?? 0;
     return message;
   },
 };

@@ -8,6 +8,7 @@ const online = ref(false)
 const team = ref(Team.UNKNOWN)
 const maxRobots = ref(0)
 const numRobots = ref(0)
+const diffRobots = ref("")
 const yellowCardsDue = ref(defaultYellowCardsDue)
 const api = inject<ApiController>('api')
 let onlineTimer: NodeJS.Timeout
@@ -27,6 +28,8 @@ api?.RegisterStateConsumer((s) => {
   team.value = s.team || Team.UNKNOWN
   maxRobots.value = s.maxRobots
   numRobots.value = s.robotsOnField
+  const robotDiff = s.maxRobots - s.robotsOnField
+  diffRobots.value = robotDiff <= 0 ? `${robotDiff}` : `+${robotDiff}`
   yellowCardsDue.value = s.yellowCardsDue.sort((a: number, b: number) => a - b)
   if (onlineTimer) {
     clearTimeout(onlineTimer)
@@ -44,7 +47,7 @@ online.value = false
 
   <div class="left-bar">
     <div class="left-bar-element">
-      Robots: <strong>{{ numRobots }}</strong> / <strong>{{ maxRobots }}</strong>
+      Robots: <strong>{{ numRobots }}</strong> / <strong>{{ maxRobots }}</strong> (<strong>{{ diffRobots }}</strong>)
     </div>
     <div class="left-bar-element">
       Yellow cards due:
