@@ -96,7 +96,7 @@ const requestRobotSubstitution = (request: boolean) => api?.Send({
       :requested="timeoutRequested"
       text="Request Timeout"
       text-requested="Cancel Timeout Request"
-      :text-additional="`${state.timeoutsLeft} left`"
+      :text-additional="`${state.timeoutsLeft} left (${Math.round(state.timeoutTimeLeft)} s)`"
       @request="requestTimeout"
     />
     <RequestButton
