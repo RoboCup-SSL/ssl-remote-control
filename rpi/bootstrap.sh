@@ -3,7 +3,8 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-CONFIG_ENV_FILE="$HOME/.config/ssl-remote-control/remote-control-config.env"
+CONFIG_DIR="$HOME/.config/ssl-remote-control"
+CONFIG_ENV_FILE="$CONFIG_DIR/remote-control-config.env"
 SRC_VERSION=${1:-}
 
 function updateSystem() {
@@ -16,7 +17,7 @@ function installService() {
     cp "$SCRIPT_DIR/ssl-remote-control.service" ~/.local/share/systemd/user/ssl-remote-control.service
     systemctl --user enable ssl-remote-control.service
     if [[ ! -f "${CONFIG_ENV_FILE}" ]]; then
-        mkdir -p "${CONFIG_ENV_FILE}"
+        mkdir -p "${CONFIG_DIR}"
         echo "Copying remote control configuration file to ${CONFIG_ENV_FILE}"
         cp "${SCRIPT_DIR}/remote-control-config.env" "${CONFIG_ENV_FILE}"
     else
