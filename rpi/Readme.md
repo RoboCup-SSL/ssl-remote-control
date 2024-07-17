@@ -12,7 +12,7 @@ Setup username, password, hostname and ssh during image creation with rpi-imager
 sudo raspi-config
 ```
 Use user 'ssl'.</br>
-Use username 'ssl-remote-control-#'
+Use username 'ssl-remote-control-#'.
 
 ## Check architecture
 ```shell
