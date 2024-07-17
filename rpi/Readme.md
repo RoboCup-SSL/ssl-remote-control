@@ -1,7 +1,7 @@
 # Run remote control on a Raspberry Pi
 
 This folder contains scripts to configure a Pi to run the remote control.
-You can install a [Raspberry Pi OS Lite](https://www.raspberrypi.com/software/operating-systems/)
+You can install a [Raspberry Pi OS 32bit Lite](https://www.raspberrypi.com/software/operating-systems/) (tested with raspbian **Bullseye**)
 and use the [bootstrap.sh](bootstrap.sh) script to set it up:
 
 ## Install Raspberry Pi OS Lite (32bit)
@@ -11,6 +11,14 @@ Setup username, password, hostname and ssh during image creation with rpi-imager
 ```shell
 sudo raspi-config
 ```
+Use user 'ssl'.</br>
+Use username 'ssl-remote-control-#'
+
+## Check architecture
+```shell
+dpkg --print-architecture
+```
+Architecture must be **armhf** cause of the used nwjs.
 
 ## Download and extract latest bootstrap archive
 ```shell
