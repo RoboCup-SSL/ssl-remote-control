@@ -135,35 +135,35 @@ export const ControllerReply = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 8) {
+          if (tag !== 8) {
             break;
           }
 
           message.statusCode = reader.int32() as any;
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.reason = reader.string();
           continue;
         case 3:
-          if (tag != 26) {
+          if (tag !== 26) {
             break;
           }
 
           message.nextToken = reader.string();
           continue;
         case 4:
-          if (tag != 32) {
+          if (tag !== 32) {
             break;
           }
 
           message.verification = reader.int32() as any;
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -174,25 +174,32 @@ export const ControllerReply = {
   fromJSON(object: any): ControllerReply {
     return {
       statusCode: isSet(object.statusCode) ? controllerReply_StatusCodeFromJSON(object.statusCode) : 0,
-      reason: isSet(object.reason) ? String(object.reason) : "",
-      nextToken: isSet(object.nextToken) ? String(object.nextToken) : "",
+      reason: isSet(object.reason) ? globalThis.String(object.reason) : "",
+      nextToken: isSet(object.nextToken) ? globalThis.String(object.nextToken) : "",
       verification: isSet(object.verification) ? controllerReply_VerificationFromJSON(object.verification) : 0,
     };
   },
 
   toJSON(message: ControllerReply): unknown {
     const obj: any = {};
-    message.statusCode !== undefined && (obj.statusCode = controllerReply_StatusCodeToJSON(message.statusCode));
-    message.reason !== undefined && (obj.reason = message.reason);
-    message.nextToken !== undefined && (obj.nextToken = message.nextToken);
-    message.verification !== undefined && (obj.verification = controllerReply_VerificationToJSON(message.verification));
+    if (message.statusCode !== 0) {
+      obj.statusCode = controllerReply_StatusCodeToJSON(message.statusCode);
+    }
+    if (message.reason !== "") {
+      obj.reason = message.reason;
+    }
+    if (message.nextToken !== "") {
+      obj.nextToken = message.nextToken;
+    }
+    if (message.verification !== 0) {
+      obj.verification = controllerReply_VerificationToJSON(message.verification);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ControllerReply>, I>>(base?: I): ControllerReply {
-    return ControllerReply.fromPartial(base ?? {});
+    return ControllerReply.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ControllerReply>, I>>(object: I): ControllerReply {
     const message = createBaseControllerReply();
     message.statusCode = object.statusCode ?? 0;
@@ -204,7 +211,7 @@ export const ControllerReply = {
 };
 
 function createBaseSignature(): Signature {
-  return { token: "", pkcs1v15: new Uint8Array() };
+  return { token: "", pkcs1v15: new Uint8Array(0) };
 }
 
 export const Signature = {
@@ -226,21 +233,21 @@ export const Signature = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 10) {
+          if (tag !== 10) {
             break;
           }
 
           message.token = reader.string();
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.pkcs1v15 = reader.bytes();
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -250,55 +257,38 @@ export const Signature = {
 
   fromJSON(object: any): Signature {
     return {
-      token: isSet(object.token) ? String(object.token) : "",
-      pkcs1v15: isSet(object.pkcs1v15) ? bytesFromBase64(object.pkcs1v15) : new Uint8Array(),
+      token: isSet(object.token) ? globalThis.String(object.token) : "",
+      pkcs1v15: isSet(object.pkcs1v15) ? bytesFromBase64(object.pkcs1v15) : new Uint8Array(0),
     };
   },
 
   toJSON(message: Signature): unknown {
     const obj: any = {};
-    message.token !== undefined && (obj.token = message.token);
-    message.pkcs1v15 !== undefined &&
-      (obj.pkcs1v15 = base64FromBytes(message.pkcs1v15 !== undefined ? message.pkcs1v15 : new Uint8Array()));
+    if (message.token !== "") {
+      obj.token = message.token;
+    }
+    if (message.pkcs1v15.length !== 0) {
+      obj.pkcs1v15 = base64FromBytes(message.pkcs1v15);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<Signature>, I>>(base?: I): Signature {
-    return Signature.fromPartial(base ?? {});
+    return Signature.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<Signature>, I>>(object: I): Signature {
     const message = createBaseSignature();
     message.token = object.token ?? "";
-    message.pkcs1v15 = object.pkcs1v15 ?? new Uint8Array();
+    message.pkcs1v15 = object.pkcs1v15 ?? new Uint8Array(0);
     return message;
   },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 function bytesFromBase64(b64: string): Uint8Array {
-  if (tsProtoGlobalThis.Buffer) {
-    return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, "base64"));
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
   } else {
-    const bin = tsProtoGlobalThis.atob(b64);
+    const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; ++i) {
       arr[i] = bin.charCodeAt(i);
@@ -308,21 +298,22 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-  if (tsProtoGlobalThis.Buffer) {
-    return tsProtoGlobalThis.Buffer.from(arr).toString("base64");
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {
-      bin.push(String.fromCharCode(byte));
+      bin.push(globalThis.String.fromCharCode(byte));
     });
-    return tsProtoGlobalThis.btoa(bin.join(""));
+    return globalThis.btoa(bin.join(""));
   }
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

@@ -26,5 +26,17 @@ test: frontend
 run: frontend
 	go run ./cmd/$(word 1,$(CMDS))
 
+dev:
+	cd frontend && npm run dev
+
 proto:
 	tools/generateProto.sh
+
+update-backend:
+	go get -v -u all
+
+update-frontend:
+	cd frontend && \
+	npm update --save
+
+update: update-backend update-frontend proto

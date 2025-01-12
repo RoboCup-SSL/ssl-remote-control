@@ -6,7 +6,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 PROJECT_DIR="${SCRIPT_DIR}/.."
 cd "${PROJECT_DIR}"
 
-PB_VERSION=22.3
+PB_VERSION=28.3
 PB_GO_VERSION=$(go list -m all | grep google.golang.org/protobuf | awk '{print $2}')
 
 # Create a local bin folder
@@ -15,13 +15,33 @@ mkdir -p "${LOCAL_DIR}"
 
 # install a specific version of protoc
 export PATH="${LOCAL_DIR}/bin:$PATH"
-if ! protoc --version | grep "${PB_VERSION}" >/dev/null; then
+if ! protoc --version | grep "${PB_VERSION}" &>/dev/null; then
   if [[ -d "${LOCAL_DIR}" ]]; then
     rm -rf "${LOCAL_DIR}"
   fi
-  curl -sLO "https://github.com/protocolbuffers/protobuf/releases/download/v${PB_VERSION}/protoc-${PB_VERSION}-linux-x86_64.zip"
-  unzip "protoc-${PB_VERSION}-linux-x86_64.zip" -d "${LOCAL_DIR}"
-  rm "protoc-${PB_VERSION}-linux-x86_64.zip"
+
+  if [[ "${OSTYPE}" == "win"* ]] ||  [[ "${OSTYPE}" == "msys" ]]; then
+    readonly qualifier="win64"
+  elif [[ "${OSTYPE}" == "linux-gnu"* ]]; then
+    if [[ "$(arch)" == "arm64" ]] || [[ "$(arch)" == "aarch64" ]]; then
+      readonly qualifier="linux-aarch_64"
+    else
+      readonly qualifier="linux-x86_64"
+    fi
+  elif [[ "${OSTYPE}" == "darwin"* ]]; then
+    if [[ "$(arch)" == "arm64" ]] || [[ "$(arch)" == "aarch64" ]]; then
+      readonly qualifier="osx-aarch_64"
+    else
+      readonly qualifier="osx-x86_64"
+    fi
+  else
+    echo "Unknown OS ${OSTYPE}" >&2
+    exit 1
+  fi
+
+  curl -sLO "https://github.com/protocolbuffers/protobuf/releases/download/v${PB_VERSION}/protoc-${PB_VERSION}-${qualifier}.zip"
+  unzip "protoc-${PB_VERSION}-${qualifier}.zip" -d "${LOCAL_DIR}"
+  rm "protoc-${PB_VERSION}-${qualifier}.zip"
 fi
 
 # install a specific version of protoc-gen-go
@@ -45,15 +65,15 @@ fi
 set -x
 
 # Generate Go code
-protoc -I"./proto" -I"$GOPATH/src" --go_out=. --go_opt=module=github.com/RoboCup-SSL/ssl-remote-control proto/*.proto
+protoc -I"./proto" --go_out=. --go_opt=module=github.com/RoboCup-SSL/ssl-remote-control proto/*.proto
 
-# Generate typescript code
+# Generate typescript code for frontend
 target_dir="./frontend/src/proto"
 mkdir -p "${target_dir}"
 protoc -I"./proto" \
-    --plugin=./frontend/node_modules/.bin/protoc-gen-ts_proto \
-    --ts_proto_out="${target_dir}" \
-    --ts_proto_opt=esModuleInterop=true \
-    --ts_proto_opt=useOptionals=messages \
-    --ts_proto_opt=oneof=unions \
-    ./proto/*.proto
+  --plugin=./frontend/node_modules/.bin/protoc-gen-ts_proto \
+  --ts_proto_out="${target_dir}" \
+  --ts_proto_opt=esModuleInterop=true \
+  --ts_proto_opt=useOptionals=messages \
+  --ts_proto_opt=oneof=unions \
+  ./proto/*.proto

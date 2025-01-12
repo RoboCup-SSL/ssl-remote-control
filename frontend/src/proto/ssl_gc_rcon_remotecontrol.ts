@@ -74,19 +74,20 @@ export interface RemoteControlRegistration {
   /** the team to be controlled */
   team: Team;
   /** signature can optionally be specified to enable secure communication */
-  signature?: Signature;
+  signature?: Signature | undefined;
 }
 
 /** wrapper for all messages from the remote control to the controller */
 export interface RemoteControlToController {
   /** signature can optionally be specified to enable secure communication */
-  signature?: Signature;
+  signature?: Signature | undefined;
   msg?:
     | { $case: "request"; request: RemoteControlToController_Request }
     | { $case: "desiredKeeper"; desiredKeeper: number }
     | { $case: "requestRobotSubstitution"; requestRobotSubstitution: boolean }
     | { $case: "requestTimeout"; requestTimeout: boolean }
-    | { $case: "requestEmergencyStop"; requestEmergencyStop: boolean };
+    | { $case: "requestEmergencyStop"; requestEmergencyStop: boolean }
+    | undefined;
 }
 
 export enum RemoteControlToController_Request {
@@ -140,9 +141,11 @@ export function remoteControlToController_RequestToJSON(object: RemoteControlToC
 /** wrapper for all messages from controller to a team's computer */
 export interface ControllerToRemoteControl {
   /** a reply from the controller */
-  controllerReply?: ControllerReply;
+  controllerReply?:
+    | ControllerReply
+    | undefined;
   /** current team state */
-  state?: RemoteControlTeamState;
+  state?: RemoteControlTeamState | undefined;
 }
 
 /** Current team state from Controller for remote control */
@@ -203,21 +206,21 @@ export const RemoteControlRegistration = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 8) {
+          if (tag !== 8) {
             break;
           }
 
           message.team = reader.int32() as any;
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.signature = Signature.decode(reader, reader.uint32());
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -234,16 +237,18 @@ export const RemoteControlRegistration = {
 
   toJSON(message: RemoteControlRegistration): unknown {
     const obj: any = {};
-    message.team !== undefined && (obj.team = teamToJSON(message.team));
-    message.signature !== undefined &&
-      (obj.signature = message.signature ? Signature.toJSON(message.signature) : undefined);
+    if (message.team !== 0) {
+      obj.team = teamToJSON(message.team);
+    }
+    if (message.signature !== undefined) {
+      obj.signature = Signature.toJSON(message.signature);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RemoteControlRegistration>, I>>(base?: I): RemoteControlRegistration {
-    return RemoteControlRegistration.fromPartial(base ?? {});
+    return RemoteControlRegistration.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RemoteControlRegistration>, I>>(object: I): RemoteControlRegistration {
     const message = createBaseRemoteControlRegistration();
     message.team = object.team ?? 0;
@@ -291,49 +296,49 @@ export const RemoteControlToController = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 10) {
+          if (tag !== 10) {
             break;
           }
 
           message.signature = Signature.decode(reader, reader.uint32());
           continue;
         case 2:
-          if (tag != 16) {
+          if (tag !== 16) {
             break;
           }
 
           message.msg = { $case: "request", request: reader.int32() as any };
           continue;
         case 3:
-          if (tag != 24) {
+          if (tag !== 24) {
             break;
           }
 
           message.msg = { $case: "desiredKeeper", desiredKeeper: reader.int32() };
           continue;
         case 4:
-          if (tag != 32) {
+          if (tag !== 32) {
             break;
           }
 
           message.msg = { $case: "requestRobotSubstitution", requestRobotSubstitution: reader.bool() };
           continue;
         case 5:
-          if (tag != 40) {
+          if (tag !== 40) {
             break;
           }
 
           message.msg = { $case: "requestTimeout", requestTimeout: reader.bool() };
           continue;
         case 6:
-          if (tag != 48) {
+          if (tag !== 48) {
             break;
           }
 
           message.msg = { $case: "requestEmergencyStop", requestEmergencyStop: reader.bool() };
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -347,36 +352,46 @@ export const RemoteControlToController = {
       msg: isSet(object.request)
         ? { $case: "request", request: remoteControlToController_RequestFromJSON(object.request) }
         : isSet(object.desiredKeeper)
-        ? { $case: "desiredKeeper", desiredKeeper: Number(object.desiredKeeper) }
+        ? { $case: "desiredKeeper", desiredKeeper: globalThis.Number(object.desiredKeeper) }
         : isSet(object.requestRobotSubstitution)
-        ? { $case: "requestRobotSubstitution", requestRobotSubstitution: Boolean(object.requestRobotSubstitution) }
+        ? {
+          $case: "requestRobotSubstitution",
+          requestRobotSubstitution: globalThis.Boolean(object.requestRobotSubstitution),
+        }
         : isSet(object.requestTimeout)
-        ? { $case: "requestTimeout", requestTimeout: Boolean(object.requestTimeout) }
+        ? { $case: "requestTimeout", requestTimeout: globalThis.Boolean(object.requestTimeout) }
         : isSet(object.requestEmergencyStop)
-        ? { $case: "requestEmergencyStop", requestEmergencyStop: Boolean(object.requestEmergencyStop) }
+        ? { $case: "requestEmergencyStop", requestEmergencyStop: globalThis.Boolean(object.requestEmergencyStop) }
         : undefined,
     };
   },
 
   toJSON(message: RemoteControlToController): unknown {
     const obj: any = {};
-    message.signature !== undefined &&
-      (obj.signature = message.signature ? Signature.toJSON(message.signature) : undefined);
-    message.msg?.$case === "request" && (obj.request = message.msg?.request !== undefined
-      ? remoteControlToController_RequestToJSON(message.msg?.request)
-      : undefined);
-    message.msg?.$case === "desiredKeeper" && (obj.desiredKeeper = Math.round(message.msg?.desiredKeeper));
-    message.msg?.$case === "requestRobotSubstitution" &&
-      (obj.requestRobotSubstitution = message.msg?.requestRobotSubstitution);
-    message.msg?.$case === "requestTimeout" && (obj.requestTimeout = message.msg?.requestTimeout);
-    message.msg?.$case === "requestEmergencyStop" && (obj.requestEmergencyStop = message.msg?.requestEmergencyStop);
+    if (message.signature !== undefined) {
+      obj.signature = Signature.toJSON(message.signature);
+    }
+    if (message.msg?.$case === "request") {
+      obj.request = remoteControlToController_RequestToJSON(message.msg.request);
+    }
+    if (message.msg?.$case === "desiredKeeper") {
+      obj.desiredKeeper = Math.round(message.msg.desiredKeeper);
+    }
+    if (message.msg?.$case === "requestRobotSubstitution") {
+      obj.requestRobotSubstitution = message.msg.requestRobotSubstitution;
+    }
+    if (message.msg?.$case === "requestTimeout") {
+      obj.requestTimeout = message.msg.requestTimeout;
+    }
+    if (message.msg?.$case === "requestEmergencyStop") {
+      obj.requestEmergencyStop = message.msg.requestEmergencyStop;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RemoteControlToController>, I>>(base?: I): RemoteControlToController {
-    return RemoteControlToController.fromPartial(base ?? {});
+    return RemoteControlToController.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RemoteControlToController>, I>>(object: I): RemoteControlToController {
     const message = createBaseRemoteControlToController();
     message.signature = (object.signature !== undefined && object.signature !== null)
@@ -443,21 +458,21 @@ export const ControllerToRemoteControl = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 10) {
+          if (tag !== 10) {
             break;
           }
 
           message.controllerReply = ControllerReply.decode(reader, reader.uint32());
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.state = RemoteControlTeamState.decode(reader, reader.uint32());
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -474,17 +489,18 @@ export const ControllerToRemoteControl = {
 
   toJSON(message: ControllerToRemoteControl): unknown {
     const obj: any = {};
-    message.controllerReply !== undefined &&
-      (obj.controllerReply = message.controllerReply ? ControllerReply.toJSON(message.controllerReply) : undefined);
-    message.state !== undefined &&
-      (obj.state = message.state ? RemoteControlTeamState.toJSON(message.state) : undefined);
+    if (message.controllerReply !== undefined) {
+      obj.controllerReply = ControllerReply.toJSON(message.controllerReply);
+    }
+    if (message.state !== undefined) {
+      obj.state = RemoteControlTeamState.toJSON(message.state);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<ControllerToRemoteControl>, I>>(base?: I): ControllerToRemoteControl {
-    return ControllerToRemoteControl.fromPartial(base ?? {});
+    return ControllerToRemoteControl.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ControllerToRemoteControl>, I>>(object: I): ControllerToRemoteControl {
     const message = createBaseControllerToRemoteControl();
     message.controllerReply = (object.controllerReply !== undefined && object.controllerReply !== null)
@@ -577,19 +593,20 @@ export const RemoteControlTeamState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 12:
-          if (tag != 96) {
+          if (tag !== 96) {
             break;
           }
 
           message.team = reader.int32() as any;
           continue;
         case 1:
-          if (tag == 8) {
+          if (tag === 8) {
             message.availableRequests.push(reader.int32() as any);
+
             continue;
           }
 
-          if (tag == 10) {
+          if (tag === 10) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
               message.availableRequests.push(reader.int32() as any);
@@ -600,12 +617,13 @@ export const RemoteControlTeamState = {
 
           break;
         case 2:
-          if (tag == 16) {
+          if (tag === 16) {
             message.activeRequests.push(reader.int32() as any);
+
             continue;
           }
 
-          if (tag == 18) {
+          if (tag === 18) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
               message.activeRequests.push(reader.int32() as any);
@@ -616,61 +634,62 @@ export const RemoteControlTeamState = {
 
           break;
         case 3:
-          if (tag != 24) {
+          if (tag !== 24) {
             break;
           }
 
           message.keeperId = reader.int32();
           continue;
         case 4:
-          if (tag != 37) {
+          if (tag !== 37) {
             break;
           }
 
           message.emergencyStopIn = reader.float();
           continue;
         case 5:
-          if (tag != 40) {
+          if (tag !== 40) {
             break;
           }
 
           message.timeoutsLeft = reader.int32();
           continue;
         case 10:
-          if (tag != 85) {
+          if (tag !== 85) {
             break;
           }
 
           message.timeoutTimeLeft = reader.float();
           continue;
         case 6:
-          if (tag != 48) {
+          if (tag !== 48) {
             break;
           }
 
           message.challengeFlagsLeft = reader.int32();
           continue;
         case 7:
-          if (tag != 56) {
+          if (tag !== 56) {
             break;
           }
 
           message.maxRobots = reader.int32();
           continue;
         case 9:
-          if (tag != 72) {
+          if (tag !== 72) {
             break;
           }
 
           message.robotsOnField = reader.int32();
           continue;
         case 8:
-          if (tag == 69) {
+          if (tag === 69) {
             message.yellowCardsDue.push(reader.float());
+
             continue;
           }
 
-          if (tag == 66) {
+          if (tag === 66) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
               message.yellowCardsDue.push(reader.float());
@@ -681,28 +700,28 @@ export const RemoteControlTeamState = {
 
           break;
         case 11:
-          if (tag != 88) {
+          if (tag !== 88) {
             break;
           }
 
           message.canSubstituteRobot = reader.bool();
           continue;
         case 13:
-          if (tag != 104) {
+          if (tag !== 104) {
             break;
           }
 
           message.botSubstitutionsLeft = reader.uint32();
           continue;
         case 14:
-          if (tag != 117) {
+          if (tag !== 117) {
             break;
           }
 
           message.botSubstitutionTimeLeft = reader.float();
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -713,61 +732,80 @@ export const RemoteControlTeamState = {
   fromJSON(object: any): RemoteControlTeamState {
     return {
       team: isSet(object.team) ? teamFromJSON(object.team) : 0,
-      availableRequests: Array.isArray(object?.availableRequests)
+      availableRequests: globalThis.Array.isArray(object?.availableRequests)
         ? object.availableRequests.map((e: any) => remoteControlRequestTypeFromJSON(e))
         : [],
-      activeRequests: Array.isArray(object?.activeRequests)
+      activeRequests: globalThis.Array.isArray(object?.activeRequests)
         ? object.activeRequests.map((e: any) => remoteControlRequestTypeFromJSON(e))
         : [],
-      keeperId: isSet(object.keeperId) ? Number(object.keeperId) : 0,
-      emergencyStopIn: isSet(object.emergencyStopIn) ? Number(object.emergencyStopIn) : 0,
-      timeoutsLeft: isSet(object.timeoutsLeft) ? Number(object.timeoutsLeft) : 0,
-      timeoutTimeLeft: isSet(object.timeoutTimeLeft) ? Number(object.timeoutTimeLeft) : 0,
-      challengeFlagsLeft: isSet(object.challengeFlagsLeft) ? Number(object.challengeFlagsLeft) : 0,
-      maxRobots: isSet(object.maxRobots) ? Number(object.maxRobots) : 0,
-      robotsOnField: isSet(object.robotsOnField) ? Number(object.robotsOnField) : 0,
-      yellowCardsDue: Array.isArray(object?.yellowCardsDue) ? object.yellowCardsDue.map((e: any) => Number(e)) : [],
-      canSubstituteRobot: isSet(object.canSubstituteRobot) ? Boolean(object.canSubstituteRobot) : false,
-      botSubstitutionsLeft: isSet(object.botSubstitutionsLeft) ? Number(object.botSubstitutionsLeft) : 0,
-      botSubstitutionTimeLeft: isSet(object.botSubstitutionTimeLeft) ? Number(object.botSubstitutionTimeLeft) : 0,
+      keeperId: isSet(object.keeperId) ? globalThis.Number(object.keeperId) : 0,
+      emergencyStopIn: isSet(object.emergencyStopIn) ? globalThis.Number(object.emergencyStopIn) : 0,
+      timeoutsLeft: isSet(object.timeoutsLeft) ? globalThis.Number(object.timeoutsLeft) : 0,
+      timeoutTimeLeft: isSet(object.timeoutTimeLeft) ? globalThis.Number(object.timeoutTimeLeft) : 0,
+      challengeFlagsLeft: isSet(object.challengeFlagsLeft) ? globalThis.Number(object.challengeFlagsLeft) : 0,
+      maxRobots: isSet(object.maxRobots) ? globalThis.Number(object.maxRobots) : 0,
+      robotsOnField: isSet(object.robotsOnField) ? globalThis.Number(object.robotsOnField) : 0,
+      yellowCardsDue: globalThis.Array.isArray(object?.yellowCardsDue)
+        ? object.yellowCardsDue.map((e: any) => globalThis.Number(e))
+        : [],
+      canSubstituteRobot: isSet(object.canSubstituteRobot) ? globalThis.Boolean(object.canSubstituteRobot) : false,
+      botSubstitutionsLeft: isSet(object.botSubstitutionsLeft) ? globalThis.Number(object.botSubstitutionsLeft) : 0,
+      botSubstitutionTimeLeft: isSet(object.botSubstitutionTimeLeft)
+        ? globalThis.Number(object.botSubstitutionTimeLeft)
+        : 0,
     };
   },
 
   toJSON(message: RemoteControlTeamState): unknown {
     const obj: any = {};
-    message.team !== undefined && (obj.team = teamToJSON(message.team));
-    if (message.availableRequests) {
+    if (message.team !== 0) {
+      obj.team = teamToJSON(message.team);
+    }
+    if (message.availableRequests?.length) {
       obj.availableRequests = message.availableRequests.map((e) => remoteControlRequestTypeToJSON(e));
-    } else {
-      obj.availableRequests = [];
     }
-    if (message.activeRequests) {
+    if (message.activeRequests?.length) {
       obj.activeRequests = message.activeRequests.map((e) => remoteControlRequestTypeToJSON(e));
-    } else {
-      obj.activeRequests = [];
     }
-    message.keeperId !== undefined && (obj.keeperId = Math.round(message.keeperId));
-    message.emergencyStopIn !== undefined && (obj.emergencyStopIn = message.emergencyStopIn);
-    message.timeoutsLeft !== undefined && (obj.timeoutsLeft = Math.round(message.timeoutsLeft));
-    message.timeoutTimeLeft !== undefined && (obj.timeoutTimeLeft = message.timeoutTimeLeft);
-    message.challengeFlagsLeft !== undefined && (obj.challengeFlagsLeft = Math.round(message.challengeFlagsLeft));
-    message.maxRobots !== undefined && (obj.maxRobots = Math.round(message.maxRobots));
-    message.robotsOnField !== undefined && (obj.robotsOnField = Math.round(message.robotsOnField));
-    if (message.yellowCardsDue) {
-      obj.yellowCardsDue = message.yellowCardsDue.map((e) => e);
-    } else {
-      obj.yellowCardsDue = [];
+    if (message.keeperId !== 0) {
+      obj.keeperId = Math.round(message.keeperId);
     }
-    message.canSubstituteRobot !== undefined && (obj.canSubstituteRobot = message.canSubstituteRobot);
-    message.botSubstitutionsLeft !== undefined && (obj.botSubstitutionsLeft = Math.round(message.botSubstitutionsLeft));
-    message.botSubstitutionTimeLeft !== undefined && (obj.botSubstitutionTimeLeft = message.botSubstitutionTimeLeft);
+    if (message.emergencyStopIn !== 0) {
+      obj.emergencyStopIn = message.emergencyStopIn;
+    }
+    if (message.timeoutsLeft !== 0) {
+      obj.timeoutsLeft = Math.round(message.timeoutsLeft);
+    }
+    if (message.timeoutTimeLeft !== 0) {
+      obj.timeoutTimeLeft = message.timeoutTimeLeft;
+    }
+    if (message.challengeFlagsLeft !== 0) {
+      obj.challengeFlagsLeft = Math.round(message.challengeFlagsLeft);
+    }
+    if (message.maxRobots !== 0) {
+      obj.maxRobots = Math.round(message.maxRobots);
+    }
+    if (message.robotsOnField !== 0) {
+      obj.robotsOnField = Math.round(message.robotsOnField);
+    }
+    if (message.yellowCardsDue?.length) {
+      obj.yellowCardsDue = message.yellowCardsDue;
+    }
+    if (message.canSubstituteRobot === true) {
+      obj.canSubstituteRobot = message.canSubstituteRobot;
+    }
+    if (message.botSubstitutionsLeft !== 0) {
+      obj.botSubstitutionsLeft = Math.round(message.botSubstitutionsLeft);
+    }
+    if (message.botSubstitutionTimeLeft !== 0) {
+      obj.botSubstitutionTimeLeft = message.botSubstitutionTimeLeft;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RemoteControlTeamState>, I>>(base?: I): RemoteControlTeamState {
-    return RemoteControlTeamState.fromPartial(base ?? {});
+    return RemoteControlTeamState.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RemoteControlTeamState>, I>>(object: I): RemoteControlTeamState {
     const message = createBaseRemoteControlTeamState();
     message.team = object.team ?? 0;
@@ -791,7 +829,8 @@ export const RemoteControlTeamState = {
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;

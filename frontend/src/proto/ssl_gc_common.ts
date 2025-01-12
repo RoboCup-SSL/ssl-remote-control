@@ -117,21 +117,21 @@ export const RobotId = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 8) {
+          if (tag !== 8) {
             break;
           }
 
           message.id = reader.uint32();
           continue;
         case 2:
-          if (tag != 16) {
+          if (tag !== 16) {
             break;
           }
 
           message.team = reader.int32() as any;
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -140,20 +140,26 @@ export const RobotId = {
   },
 
   fromJSON(object: any): RobotId {
-    return { id: isSet(object.id) ? Number(object.id) : 0, team: isSet(object.team) ? teamFromJSON(object.team) : 0 };
+    return {
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      team: isSet(object.team) ? teamFromJSON(object.team) : 0,
+    };
   },
 
   toJSON(message: RobotId): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.team !== undefined && (obj.team = teamToJSON(message.team));
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.team !== 0) {
+      obj.team = teamToJSON(message.team);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RobotId>, I>>(base?: I): RobotId {
-    return RobotId.fromPartial(base ?? {});
+    return RobotId.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RobotId>, I>>(object: I): RobotId {
     const message = createBaseRobotId();
     message.id = object.id ?? 0;
@@ -165,7 +171,8 @@ export const RobotId = {
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends { $case: string } ? { [K in keyof Omit<T, "$case">]?: DeepPartial<T[K]> } & { $case: T["$case"] }
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
