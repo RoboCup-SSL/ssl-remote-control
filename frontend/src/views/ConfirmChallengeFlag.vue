@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import {inject} from 'vue';
-import {RemoteControlToController_Request} from '../proto/ssl_gc_rcon_remotecontrol';
+import {
+  RemoteControlToController_Request,
+  RemoteControlToControllerSchema
+} from '../proto/ssl_gc_rcon_remotecontrol_pb';
 import {ApiController} from '../services/ApiController';
 import router from '../router';
+import {create} from "@bufbuild/protobuf";
 
 const api = inject<ApiController>('api')
 
 const requestChallengeFlag = () => {
-  api?.Send({
-    msg: {
-      $case: 'request',
-      request: RemoteControlToController_Request.CHALLENGE_FLAG
+  api?.Send(create(RemoteControlToControllerSchema,
+    {
+      msg: {
+        case: 'request',
+        value: RemoteControlToController_Request.CHALLENGE_FLAG
+      }
     }
-  })
+    )
+  )
   router.push('/')
 }
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ApiController} from '../services/ApiController';
 import {computed, inject, ref} from 'vue';
-import {Team} from "../proto/ssl_gc_common";
+import {Team} from "../proto/ssl_gc_common_pb";
 
 const defaultYellowCardsDue: number[] = []
 const online = ref(false)

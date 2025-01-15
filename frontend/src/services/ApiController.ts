@@ -1,15 +1,17 @@
 import {
-    ControllerToRemoteControl,
+    ControllerToRemoteControlSchema,
     RemoteControlTeamState,
-    RemoteControlToController
-} from '../proto/ssl_gc_rcon_remotecontrol';
-import {ControllerReply_StatusCode} from '../proto/ssl_gc_rcon';
+    RemoteControlToController,
+    RemoteControlToControllerSchema
+} from '../proto/ssl_gc_rcon_remotecontrol_pb';
+import {ControllerReply_StatusCode} from '../proto/ssl_gc_rcon_pb';
+import {toJson, fromJson} from "@bufbuild/protobuf";
 
 export class ApiController {
     private readonly apiPath = '/api/control'
     private ws ?: WebSocket
-    private stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
-    private errorConsumer: ((message: string) => any)[] = []
+    private readonly stateConsumer: ((state: RemoteControlTeamState) => any)[] = []
+    private readonly errorConsumer: ((message: string) => any)[] = []
 
     private latestState: RemoteControlTeamState
 
@@ -21,7 +23,7 @@ export class ApiController {
     public Send(request: RemoteControlToController) {
         const ws = this.ws
         if (ws) {
-            const json = JSON.stringify(RemoteControlToController.toJSON(request))
+            const json = JSON.stringify(toJson(RemoteControlToControllerSchema, request))
             ws.send(json)
         }
     }
@@ -44,7 +46,7 @@ export class ApiController {
         const ws = new WebSocket(address);
 
         ws.onmessage = (e) => {
-            const reply = ControllerToRemoteControl.fromJSON(JSON.parse(e.data))
+            const reply = fromJson(ControllerToRemoteControlSchema, JSON.parse(e.data))
             if (reply.controllerReply?.statusCode === ControllerReply_StatusCode.OK && reply.state) {
                 this.latestState = reply.state
                 for (const callback of this.stateConsumer) {

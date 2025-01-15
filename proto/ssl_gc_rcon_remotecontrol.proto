@@ -1,7 +1,5 @@
 syntax = "proto2";
 
-option go_package = "github.com/RoboCup-SSL/ssl-remote-control/internal/rcon";
-
 import "ssl_gc_common.proto";
 import "ssl_gc_rcon.proto";
 

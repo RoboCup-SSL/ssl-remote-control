@@ -30,7 +30,7 @@ dev:
 	cd frontend && npm run dev
 
 proto:
-	tools/generateProto.sh
+	buf generate
 
 update-backend:
 	go get -v -u all

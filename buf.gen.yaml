@@ -1,0 +1,16 @@
+version: v2
+inputs:
+  - directory: proto
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/RoboCup-SSL/ssl-remote-control/internal/rcon
+plugins:
+  - remote: buf.build/bufbuild/es:v2.2.3
+    out: frontend/src/proto
+    opt: target=ts
+  - remote: buf.build/protocolbuffers/go:v1.36.2
+    out: internal/rcon
+    opt:
+      - paths=source_relative

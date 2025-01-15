@@ -2,12 +2,17 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router';
 import {ApiController} from './services/ApiController';
-import {RemoteControlRequestType, RemoteControlTeamState} from './proto/ssl_gc_rcon_remotecontrol';
-import {Team} from "./proto/ssl_gc_common";
+import {
+    RemoteControlRequestType,
+    RemoteControlTeamState,
+    RemoteControlTeamStateSchema
+} from './proto/ssl_gc_rcon_remotecontrol_pb';
+import {Team} from "./proto/ssl_gc_common_pb";
+import {create} from "@bufbuild/protobuf";
 
 let latestState: RemoteControlTeamState
 if (import.meta.env.PROD) {
-    latestState = {
+    latestState = create(RemoteControlTeamStateSchema, {
         team: Team.UNKNOWN,
         availableRequests: [],
         activeRequests: [],
@@ -22,9 +27,9 @@ if (import.meta.env.PROD) {
         canSubstituteRobot: false,
         botSubstitutionsLeft: 0,
         botSubstitutionTimeLeft: 0,
-    }
+    })
 } else {
-    latestState = {
+    latestState = create(RemoteControlTeamStateSchema, {
         team: Team.BLUE,
         availableRequests: [
             RemoteControlRequestType.CHANGE_KEEPER_ID,
@@ -43,7 +48,7 @@ if (import.meta.env.PROD) {
         canSubstituteRobot: false,
         botSubstitutionsLeft: 5,
         botSubstitutionTimeLeft: 1.5,
-    }
+    })
 }
 
 const apiController = new ApiController(latestState)

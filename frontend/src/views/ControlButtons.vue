@@ -4,13 +4,15 @@ import RequestButton from '../components/RequestButton.vue';
 import router from '../router';
 import {
   RemoteControlRequestType,
-  RemoteControlTeamState,
+  RemoteControlTeamStateSchema,
   RemoteControlToController_Request,
-} from '../proto/ssl_gc_rcon_remotecontrol';
+  RemoteControlToControllerSchema,
+} from '../proto/ssl_gc_rcon_remotecontrol_pb';
 import {ApiController} from '../services/ApiController';
 import {computed, inject, ref} from 'vue';
+import {create} from "@bufbuild/protobuf";
 
-const state = ref(RemoteControlTeamState.fromJSON({}));
+const state = ref(create(RemoteControlTeamStateSchema, {}));
 const api = inject<ApiController>('api')
 
 api?.RegisterStateConsumer((s) => state.value = s)
@@ -39,30 +41,30 @@ const botSubstitutionRequestedMsg = computed(() => {
 })
 
 const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
-const requestEmergencyStop = (request: boolean) => api?.Send({
+const requestEmergencyStop = (request: boolean) => api?.Send(create(RemoteControlToControllerSchema, {
   msg: {
-    $case: 'requestEmergencyStop',
-    requestEmergencyStop: request
+    case: 'requestEmergencyStop',
+    value: request
   }
-})
-const requestTimeout = (request: boolean) => api?.Send({
+}))
+const requestTimeout = (request: boolean) => api?.Send(create(RemoteControlToControllerSchema, {
   msg: {
-    $case: 'requestTimeout',
-    requestTimeout: request
+    case: 'requestTimeout',
+    value: request
   }
-})
-const stopTimeout = () => api?.Send({
+}))
+const stopTimeout = () => api?.Send(create(RemoteControlToControllerSchema, {
   msg: {
-    $case: 'request',
-    request: RemoteControlToController_Request.STOP_TIMEOUT
+    case: 'request',
+    value: RemoteControlToController_Request.STOP_TIMEOUT
   }
-})
-const requestRobotSubstitution = (request: boolean) => api?.Send({
+}))
+const requestRobotSubstitution = (request: boolean) => api?.Send(create(RemoteControlToControllerSchema, {
   msg: {
-    $case: 'requestRobotSubstitution',
-    requestRobotSubstitution: request
+    case: 'requestRobotSubstitution',
+    value: request
   }
-})
+}))
 
 </script>
 

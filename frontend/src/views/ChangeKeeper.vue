@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import SelectNumber from '../components/SelectNumber.vue';
 import {inject, ref} from 'vue';
-import {RemoteControlTeamState} from '../proto/ssl_gc_rcon_remotecontrol';
+import {RemoteControlTeamState, RemoteControlToControllerSchema} from '../proto/ssl_gc_rcon_remotecontrol_pb';
 import {ApiController} from '../services/ApiController';
+import {create} from "@bufbuild/protobuf";
 import router from '../router';
 
 const keeperId = ref(0);
@@ -10,7 +11,10 @@ const api = inject<ApiController>('api')
 api?.RegisterStateConsumer((s: RemoteControlTeamState) => keeperId.value = s.keeperId)
 
 const changeKeeperId = (id: number) => {
-  api?.Send({msg: {$case: 'desiredKeeper', desiredKeeper: id}})
+  api?.Send(create(RemoteControlToControllerSchema,
+    {msg: {case: 'desiredKeeper', value: id}}
+    )
+  )
   router.push('/')
 }
 
