@@ -23,6 +23,7 @@ const canRequestTimeout = computed(() => state.value.availableRequests.includes(
 const canStopTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.STOP_TIMEOUT))
 const canChangeKeeperId = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHANGE_KEEPER_ID))
 const canRequestRobotSubstitution = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
+const canFailBallplacement = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.FAIL_BALLPLACEMENT))
 const emergencyStopRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
 const robotSubstitutionRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
@@ -35,9 +36,9 @@ const robotDiff = computed(() => {
 })
 const botSubstitutionRequestedMsg = computed(() => {
   if (state.value.canSubstituteRobot) {
-    return 'Finish Robot Substitution'
+    return 'Finish Substitution'
   }
-  return 'Cancel Robot Substitution Request'
+  return 'Cancel Substitution Request'
 })
 
 const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
@@ -63,6 +64,12 @@ const requestRobotSubstitution = (request: boolean) => api?.Send(create(RemoteCo
   msg: {
     case: 'requestRobotSubstitution',
     value: request
+  }
+}))
+const failBallplacement = () => api?.Send(create(RemoteControlToControllerSchema, {
+  msg: {
+    case: 'request',
+    value: RemoteControlToController_Request.FAIL_BALLPLACEMENT
   }
 }))
 
@@ -109,13 +116,18 @@ const requestRobotSubstitution = (request: boolean) => api?.Send(create(RemoteCo
       @request="() => router.push('/change-keeper')"
     />
     <RequestButton
-      class="two-columns"
       :can-request="canRequestRobotSubstitution"
       :requested="robotSubstitutionRequested"
-      text="Request Robot Substitution"
+      text="Request Substitution"
       :text-requested="botSubstitutionRequestedMsg"
       :text-additional="robotDiff"
       @request="requestRobotSubstitution"
+    />
+    <RequestButton
+      :can-request="canFailBallplacement"
+      :requested="false"
+      text="Fail Ballplacement"
+      @request="failBallplacement"
     />
   </div>
 </template>
@@ -136,16 +148,6 @@ const requestRobotSubstitution = (request: boolean) => api?.Send(create(RemoteCo
   }
   .two-columns {
     grid-column: 1 / 3;
-  }
-}
-
-@media (max-aspect-ratio: 1/1) {
-  .buttons-orientation {
-    gap: 1em;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-  }
-  .two-columns {
   }
 }
 
