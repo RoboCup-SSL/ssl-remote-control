@@ -38,4 +38,7 @@ const blue = computed(() => props.canRequest && props.requested)
 </template>
 
 <style scoped>
+.button {
+  margin: 0.5rem;
+}
 </style>

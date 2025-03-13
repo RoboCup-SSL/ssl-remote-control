@@ -85,6 +85,13 @@ const failBallplacement = () => api?.Send(create(RemoteControlToControllerSchema
       @request="requestChallengeFlag"
     />
     <RequestButton
+      v-if="canFailBallplacement"
+      :requested="false"
+      text="Fail Ballplacement"
+      @request="failBallplacement"
+    />
+    <RequestButton
+      v-else
       :can-request="canRequestEmergencyStop"
       :requested="emergencyStopRequested"
       text="Emergency Stop"
@@ -122,12 +129,6 @@ const failBallplacement = () => api?.Send(create(RemoteControlToControllerSchema
       :text-requested="botSubstitutionRequestedMsg"
       :text-additional="robotDiff"
       @request="requestRobotSubstitution"
-    />
-    <RequestButton
-      :can-request="canFailBallplacement"
-      :requested="false"
-      text="Fail Ballplacement"
-      @request="failBallplacement"
     />
   </div>
 </template>
