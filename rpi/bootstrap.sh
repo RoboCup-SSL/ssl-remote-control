@@ -10,6 +10,7 @@ SRC_VERSION=${1:-}
 function updateSystem() {
     sudo apt-get update
     sudo apt-get -y dist-upgrade
+    sudo apt-get -y install vim
 }
 
 function installService() {
@@ -70,6 +71,7 @@ function install_nwjs() {
 
 function configurePi() {
     sudo cp "${SCRIPT_DIR}/config.txt" /boot/config.txt
+    cp "${SCRIPT_DIR}/update.sh" ~/update.sh
 }
 
 updateSystem
