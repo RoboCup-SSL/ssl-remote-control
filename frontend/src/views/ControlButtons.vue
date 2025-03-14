@@ -86,6 +86,7 @@ const failBallplacement = () => api?.Send(create(RemoteControlToControllerSchema
     />
     <RequestButton
       v-if="canFailBallplacement"
+      :can-request="canFailBallplacement"
       :requested="false"
       text="Fail Ballplacement"
       @request="failBallplacement"
