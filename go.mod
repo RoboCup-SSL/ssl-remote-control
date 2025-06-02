@@ -2,7 +2,7 @@ module github.com/RoboCup-SSL/ssl-remote-control
 
 go 1.22
 
-toolchain go1.24.2
+toolchain go1.24.3
 
 require (
 	github.com/gorilla/websocket v1.5.3
