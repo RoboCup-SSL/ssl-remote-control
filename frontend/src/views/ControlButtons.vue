@@ -18,13 +18,13 @@ const api = inject<ApiController>('api')
 api?.RegisterStateConsumer((s) => state.value = s)
 
 const canRequestChallengeFlag = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHALLENGE_FLAG))
-const canRequestEmergencyStop = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
+const canRequestForceTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const canRequestTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.TIMEOUT))
 const canStopTimeout = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.STOP_TIMEOUT))
 const canChangeKeeperId = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.CHANGE_KEEPER_ID))
 const canRequestRobotSubstitution = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 const canFailBallplacement = computed(() => state.value.availableRequests.includes(RemoteControlRequestType.FAIL_BALLPLACEMENT))
-const emergencyStopRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
+const forceTimeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.EMERGENCY_STOP))
 const timeoutRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.TIMEOUT))
 const robotSubstitutionRequested = computed(() => state.value.activeRequests.includes(RemoteControlRequestType.ROBOT_SUBSTITUTION))
 const robotDiff = computed(() => {
@@ -42,7 +42,7 @@ const botSubstitutionRequestedMsg = computed(() => {
 })
 
 const requestChallengeFlag = () => router.push('/confirm-challenge-flag')
-const requestEmergencyStop = (request: boolean) => api?.Send(create(RemoteControlToControllerSchema, {
+const requestForceTimeout = (request: boolean) => api?.Send(create(RemoteControlToControllerSchema, {
   msg: {
     case: 'requestEmergencyStop',
     value: request
@@ -93,11 +93,11 @@ const failBallplacement = () => api?.Send(create(RemoteControlToControllerSchema
     />
     <RequestButton
       v-else
-      :can-request="canRequestEmergencyStop"
-      :requested="emergencyStopRequested"
-      text="Emergency Stop"
-      :text-requested="`Cancel Emergency Stop (${Math.round(state.emergencyStopIn)} s left)`"
-      @request="requestEmergencyStop"
+      :can-request="canRequestForceTimeout"
+      :requested="forceTimeoutRequested"
+      text="Force Timeout"
+      :text-requested="`Cancel Force Timeout (${Math.round(state.emergencyStopIn)} s left)`"
+      @request="requestForceTimeout"
     />
     <RequestButton
       v-if="canStopTimeout"
