@@ -4,7 +4,7 @@ WORKDIR frontend
 RUN npm install
 RUN npm run build
 
-FROM golang:1.26-alpine@sha256:28d89ee9cc0ff9fec75c82ca201e6bf7fdf9a679d4b7b24dfa04f2bb766bb468 AS build_go
+FROM golang:1.26-alpine@sha256:a2012b4a1d1f9f7e9f44e0d39b805a901e856b1dd80b4e6ee4338db547050308 AS build_go
 ARG cmd=ssl-remote-control
 WORKDIR work
 COPY . .
